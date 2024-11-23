@@ -1,5 +1,7 @@
 package com.yuan.mianshiba.controller;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.yuan.mianshiba.annotation.AuthCheck;
 import com.yuan.mianshiba.common.BaseResponse;
@@ -11,6 +13,7 @@ import com.yuan.mianshiba.exception.BusinessException;
 import com.yuan.mianshiba.exception.ThrowUtils;
 import com.yuan.mianshiba.model.dto.questionBankQuestion.QuestionBankQuestionAddRequest;
 import com.yuan.mianshiba.model.dto.questionBankQuestion.QuestionBankQuestionQueryRequest;
+import com.yuan.mianshiba.model.dto.questionBankQuestion.QuestionBankQuestionRemoveRequest;
 import com.yuan.mianshiba.model.dto.questionBankQuestion.QuestionBankQuestionUpdateRequest;
 import com.yuan.mianshiba.model.entity.QuestionBankQuestion;
 import com.yuan.mianshiba.model.entity.User;
@@ -43,13 +46,14 @@ public class QuestionBankQuestionController {
     // region 增删改查
 
     /**
-     * 创建题库
+     * 创建题库题目关联（仅管理员可用）
      *
      * @param questionBankQuestionAddRequest
      * @param request
      * @return
      */
     @PostMapping("/add")
+    @AuthCheck(mustRole = UserConstant.ADMIN_ROLE)
     public BaseResponse<Long> addQuestionBankQuestion(@RequestBody QuestionBankQuestionAddRequest questionBankQuestionAddRequest, HttpServletRequest request) {
         ThrowUtils.throwIf(questionBankQuestionAddRequest == null, ErrorCode.PARAMS_ERROR);
         // todo 在此处将实体类和 DTO 进行转换
@@ -69,7 +73,7 @@ public class QuestionBankQuestionController {
     }
 
     /**
-     * 删除题库
+     * 删除题库题目关联
      *
      * @param deleteRequest
      * @param request
@@ -96,7 +100,7 @@ public class QuestionBankQuestionController {
     }
 
     /**
-     * 更新题库（仅管理员可用）
+     * 更新题库题目关联（仅管理员可用）
      *
      * @param questionBankQuestionUpdateRequest
      * @return
@@ -123,7 +127,7 @@ public class QuestionBankQuestionController {
     }
 
     /**
-     * 根据 id 获取题库（封装类）
+     * 根据 id 获取题库题目关联（封装类）
      *
      * @param id
      * @return
@@ -139,7 +143,7 @@ public class QuestionBankQuestionController {
     }
 
     /**
-     * 分页获取题库列表（仅管理员可用）
+     * 分页获取题库题目关联列表（仅管理员可用）
      *
      * @param questionBankQuestionQueryRequest
      * @return
@@ -156,7 +160,7 @@ public class QuestionBankQuestionController {
     }
 
     /**
-     * 分页获取题库列表（封装类）
+     * 分页获取题库题目关联列表（封装类）
      *
      * @param questionBankQuestionQueryRequest
      * @param request
@@ -177,7 +181,7 @@ public class QuestionBankQuestionController {
     }
 
     /**
-     * 分页获取当前登录用户创建的题库列表
+     * 分页获取当前登录用户创建的题库题目关联列表
      *
      * @param questionBankQuestionQueryRequest
      * @param request
@@ -202,4 +206,26 @@ public class QuestionBankQuestionController {
     }
 
     // endregion
+
+    /**
+     * 移除题库题目关联（仅管理员可用）
+     *
+     * @param questionBankQuestionRemoveRequest
+     * @return
+     */
+    @PostMapping("/remove")
+    @AuthCheck(mustRole = UserConstant.ADMIN_ROLE)
+    public BaseResponse<Boolean> removeQuestionBankQuestion(@RequestBody QuestionBankQuestionRemoveRequest questionBankQuestionRemoveRequest) {
+        // 参数校验
+        ThrowUtils.throwIf(questionBankQuestionRemoveRequest == null, ErrorCode.PARAMS_ERROR);
+        Long questionBankId = questionBankQuestionRemoveRequest.getQuestionBankId();
+        Long questionId = questionBankQuestionRemoveRequest.getQuestionId();
+        ThrowUtils.throwIf(questionBankId == null || questionId == null, ErrorCode.PARAMS_ERROR);
+        // 构造查询
+        LambdaQueryWrapper<QuestionBankQuestion> lambdaQueryWrapper = Wrappers.lambdaQuery(QuestionBankQuestion.class)
+                .eq(QuestionBankQuestion::getQuestionBankId, questionBankId)
+                .eq(QuestionBankQuestion::getQuestionId, questionId);
+        boolean result = questionBankQuestionService.remove(lambdaQueryWrapper);
+        return ResultUtils.success(result);
+    }
 }
