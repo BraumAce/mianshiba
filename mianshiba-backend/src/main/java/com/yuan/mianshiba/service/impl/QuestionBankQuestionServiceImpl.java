@@ -9,15 +9,20 @@ import com.yuan.mianshiba.constant.CommonConstant;
 import com.yuan.mianshiba.exception.ThrowUtils;
 import com.yuan.mianshiba.mapper.QuestionBankQuestionMapper;
 import com.yuan.mianshiba.model.dto.questionBankQuestion.QuestionBankQuestionQueryRequest;
+import com.yuan.mianshiba.model.entity.Question;
+import com.yuan.mianshiba.model.entity.QuestionBank;
 import com.yuan.mianshiba.model.entity.QuestionBankQuestion;
 import com.yuan.mianshiba.model.entity.User;
 import com.yuan.mianshiba.model.vo.QuestionBankQuestionVO;
 import com.yuan.mianshiba.model.vo.UserVO;
 import com.yuan.mianshiba.service.QuestionBankQuestionService;
+import com.yuan.mianshiba.service.QuestionBankService;
+import com.yuan.mianshiba.service.QuestionService;
 import com.yuan.mianshiba.service.UserService;
 import com.yuan.mianshiba.utils.SqlUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ObjectUtils;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -37,6 +42,13 @@ import java.util.stream.Collectors;
 public class QuestionBankQuestionServiceImpl extends ServiceImpl<QuestionBankQuestionMapper, QuestionBankQuestion> implements QuestionBankQuestionService {
 
     @Resource
+    @Lazy
+    private QuestionService questionService;
+
+    @Resource
+    private QuestionBankService questionBankService;
+
+    @Resource
     private UserService userService;
 
     /**
@@ -48,19 +60,17 @@ public class QuestionBankQuestionServiceImpl extends ServiceImpl<QuestionBankQue
     @Override
     public void validQuestionBankQuestion(QuestionBankQuestion questionBankQuestion, boolean add) {
         ThrowUtils.throwIf(questionBankQuestion == null, ErrorCode.PARAMS_ERROR);
-        // 不需要校验
-//        // todo 从对象中取值
-//        String title = questionBankQuestion.getTitle();
-//        // 创建数据时，参数不能为空
-//        if (add) {
-//            // todo 补充校验规则
-//            ThrowUtils.throwIf(StringUtils.isBlank(title), ErrorCode.PARAMS_ERROR);
-//        }
-//        // 修改数据时，有参数则校验
-//        // todo 补充校验规则
-//        if (StringUtils.isNotBlank(title)) {
-//            ThrowUtils.throwIf(title.length() > 80, ErrorCode.PARAMS_ERROR, "标题过长");
-//        }
+        // 参数校验，题库和题目必须存在
+        Long questionId = questionBankQuestion.getQuestionId();
+        if (questionId != null) {
+            Question question = questionService.getById(questionId);
+            ThrowUtils.throwIf(question == null, ErrorCode.NOT_FOUND_ERROR, "题目不存在");
+        }
+        Long questionBankId = questionBankQuestion.getQuestionBankId();
+        if (questionBankId != null) {
+            QuestionBank questionBank = questionBankService.getById(questionBankId);
+            ThrowUtils.throwIf(questionBank == null, ErrorCode.NOT_FOUND_ERROR, "题库不存在");
+        }
     }
 
     /**
