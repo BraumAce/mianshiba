@@ -61,7 +61,7 @@ interface Props {
 }
 
 /**
- * 基本布局
+ * 通用布局
  * @param children
  * @constructor
  */
