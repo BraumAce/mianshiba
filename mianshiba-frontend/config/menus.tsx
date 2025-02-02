@@ -2,7 +2,7 @@ import { MenuDataItem } from "@ant-design/pro-layout";
 import { CrownOutlined } from "@ant-design/icons";
 
 // 菜单列表
-const menus = [
+export const menus: MenuDataItem[] = [
   {
     path: "/",
     name: "主页",
@@ -16,8 +16,8 @@ const menus = [
     name: "题目",
   },
   {
-    name: "面试鸭",
-    path: "https://mianshiya.com",
+    name: "面试吧",
+    path: "https://mianshiba.com",
     target: "_blank",
   },
   {
@@ -32,6 +32,3 @@ const menus = [
     ],
   },
 ] as MenuDataItem[];
-
-// 导出
-export default menus;

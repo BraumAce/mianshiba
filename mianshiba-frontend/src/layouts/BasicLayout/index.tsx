@@ -6,16 +6,15 @@ import {
   QuestionCircleFilled,
   SearchOutlined,
 } from "@ant-design/icons";
-import type { ProSettings } from "@ant-design/pro-components";
-import { ProLayout } from "@ant-design/pro-components";
+import { menus } from "../../../config/menus";
 import { Dropdown, Input, theme } from "antd";
-import React, { useState } from "react";
-import Image from "next/image";
+import { ProLayout } from "@ant-design/pro-components";
 import { usePathname } from "next/navigation";
+import React from "react";
+import Image from "next/image";
 import Link from "next/link";
 import GlobalFooter from "@/components/GlobalFooter";
 import "./index.css";
-import menus from "../../../config/menus";
 
 /**
  * 搜索条
@@ -61,6 +60,11 @@ interface Props {
   children: React.ReactNode;
 }
 
+/**
+ * 基本布局
+ * @param children
+ * @constructor
+ */
 export default function BasicLayout({ children }: Props) {
   const pathname = usePathname();
 
@@ -86,8 +90,9 @@ export default function BasicLayout({ children }: Props) {
         location={{
           pathname,
         }}
+        // 头像区
         avatarProps={{
-          src: "https://gw.alipayobjects.com/zos/antfincdn/efFD%24IOql2/weixintupian_20170331104822.jpg",
+          src: "/assets/logo.png",
           size: "small",
           title: "BraumAce",
           render: (props, dom) => {
@@ -108,8 +113,8 @@ export default function BasicLayout({ children }: Props) {
             );
           },
         }}
-        actionsRender={(props) => {
-          // if (props.isMobile) return [];
+        // 操作渲染
+        actionsRender={() => {
           return [
             <SearchInput key={"search"} />,
             <InfoCircleFilled key="InfoCircleFilled" />,
@@ -123,6 +128,7 @@ export default function BasicLayout({ children }: Props) {
             </a>,
           ];
         }}
+        // 标题区
         headerTitleRender={(logo, title, _) => {
           const defaultDom = (
             <a>
@@ -142,7 +148,7 @@ export default function BasicLayout({ children }: Props) {
           return <GlobalFooter />;
         }}
         onMenuHeaderClick={(e) => console.log(e)}
-        // 定义菜单
+        // 菜单项数据
         menuDataRender={() => {
           return menus;
         }}
