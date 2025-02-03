@@ -3,6 +3,10 @@ import React, { useCallback, useEffect } from "react";
 import { AntdRegistry } from "@ant-design/nextjs-registry";
 import BasicLayout from "@/layouts/BasicLayout";
 import "./globals.css";
+import {Provider, useDispatch} from "react-redux";
+import store, { AppDispatch } from "@/stores";
+import { getLoginUserUsingGet } from "@/api/userController";
+import { usePathname } from "next/navigation";
 
 /**
  * 全局初始化逻辑
@@ -14,17 +18,27 @@ const InitLayout: React.FC<
     children: React.ReactNode;
   }>
 > = ({ children }) => {
+  const pathname = usePathname();
+  const dispatch = useDispatch<AppDispatch>();
   /**
-   * 全局初始化函数
+   * 初始化全局用户状态
    */
-  const doInit = useCallback(() => {
-    console.log("hello！这里是面试吧！")
+  const doInitLoginUser = useCallback( async () => {
+    const res = await getLoginUserUsingGet();
+    if (
+      !pathname.startsWith("/user/login") &&
+      !pathname.startsWith("/user/register")
+    ) {
+      if (res.data) {
+        // 更新全局用户状态
+      } else {}
+    }
   }, []);
 
   // 只执行一次
   useEffect(() => {
-    doInit();
-  }, [doInit]);
+    doInitLoginUser();
+  }, [doInitLoginUser]);
 
   return children;
 };
@@ -38,9 +52,9 @@ export default function RootLayout({
     <html lang="zh">
       <body>
         <AntdRegistry>
-          <InitLayout>
+          <Provider store={store}>
             <BasicLayout>{children}</BasicLayout>
-          </InitLayout>
+          </Provider>
         </AntdRegistry>
       </body>
     </html>

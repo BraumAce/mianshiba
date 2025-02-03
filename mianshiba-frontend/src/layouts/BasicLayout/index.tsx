@@ -15,6 +15,8 @@ import Image from "next/image";
 import Link from "next/link";
 import GlobalFooter from "@/components/GlobalFooter";
 import "./index.css";
+import { RootState } from "@/stores";
+import { useSelector } from "react-redux";
 
 /**
  * 搜索条
@@ -68,6 +70,9 @@ interface Props {
 export default function BasicLayout({ children }: Props) {
   const pathname = usePathname();
 
+  // 当前登录用户
+  const loginUser = useSelector((state: RootState) => state.loginUser);
+
   return (
     <div
       id="basicLayout"
@@ -92,9 +97,9 @@ export default function BasicLayout({ children }: Props) {
         }}
         // 头像区
         avatarProps={{
-          src: "/assets/logo.png",
+          src: loginUser.userAvatar || "/assets/logo.png",
           size: "small",
-          title: "BraumAce",
+          title: loginUser.userName || "面试吧",
           render: (props, dom) => {
             return (
               <Dropdown
@@ -130,18 +135,12 @@ export default function BasicLayout({ children }: Props) {
         }}
         // 标题区
         headerTitleRender={(logo, title, _) => {
-          const defaultDom = (
+          return (
             <a>
               {logo}
               {title}
             </a>
           );
-          if (typeof window === "undefined") return defaultDom;
-          if (document.body.clientWidth < 1400) {
-            return defaultDom;
-          }
-          if (_.isMobile) return defaultDom;
-          return <>{defaultDom}</>;
         }}
         // 底部栏
         footerRender={() => {
