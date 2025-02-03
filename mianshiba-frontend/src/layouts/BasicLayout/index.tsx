@@ -17,6 +17,7 @@ import GlobalFooter from "@/components/GlobalFooter";
 import "./index.css";
 import { RootState } from "@/stores";
 import { useSelector } from "react-redux";
+import getAccessibleMenus from "@/access/menuAccess";
 
 /**
  * 搜索条
@@ -149,7 +150,7 @@ export default function BasicLayout({ children }: Props) {
         onMenuHeaderClick={(e) => console.log(e)}
         // 菜单项数据
         menuDataRender={() => {
-          return menus;
+          return getAccessibleMenus(loginUser, menus);
         }}
         // 菜单渲染
         menuItemRender={(item, dom) => (

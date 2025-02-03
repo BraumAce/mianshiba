@@ -7,6 +7,7 @@ import {Provider, useDispatch} from "react-redux";
 import store, { AppDispatch } from "@/stores";
 import { getLoginUserUsingGet } from "@/api/userController";
 import { usePathname } from "next/navigation";
+import AccessLayout from "@/access/AccessLayout";
 
 /**
  * 全局初始化逻辑
@@ -53,7 +54,11 @@ export default function RootLayout({
       <body>
         <AntdRegistry>
           <Provider store={store}>
-            <BasicLayout>{children}</BasicLayout>
+            <InitLayout>
+              <BasicLayout>
+                <AccessLayout>{children}</AccessLayout>
+              </BasicLayout>
+            </InitLayout>
           </Provider>
         </AntdRegistry>
       </body>
