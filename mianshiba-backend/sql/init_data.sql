@@ -4,14 +4,14 @@ use mianshiba;
 -- 用户表初始数据（密码是 12345678）
 INSERT INTO user (id, userAccount, userPassword, unionId, mpOpenId, userName, userAvatar, userProfile, userRole)
 VALUES (1, 'user1', 'b0dd3697a192885d7c055db46155b26a', 'unionId1', 'mpOpenId1', 'user1',
-        'https://mianshiba.cn/logo.png', '喜欢编程的小白', 'user'),
+        'https://cloud.braumace.cn/f/KXrh9/logo.png', '喜欢编程的小白', 'user'),
        (2, 'user2', 'b0dd3697a192885d7c055db46155b26a', 'unionId2', 'mpOpenId2', 'user2',
-        'https://mianshiba.cn/logo.png', '全栈开发工程师', 'user'),
+        'https://cloud.braumace.cn/f/KXrh9/logo.png', '全栈开发工程师', 'user'),
        (3, 'user3', 'b0dd3697a192885d7c055db46155b26a', 'unionId3', 'mpOpenId3', 'user3',
-        'https://mianshiba.cn/logo.png', '前端爱好者', 'user'),
+        'https://cloud.braumace.cn/f/KXrh9/logo.png', '前端爱好者', 'user'),
        (4, 'user4', 'b0dd3697a192885d7c055db46155b26a', 'unionId4', 'mpOpenId4', 'user4',
-        'https://mianshiba.cn/logo.png', '后端开发工程师', 'user'),
-       (5, 'BraumAce', 'b0dd3697a192885d7c055db46155b26a', NULL, NULL, 'BraumAce', 'https://mianshiba.cn/logo.png',
+        'https://cloud.braumace.cn/f/KXrh9/logo.png', '后端开发工程师', 'user'),
+       (5, 'BraumAce', 'b0dd3697a192885d7c055db46155b26a', NULL, NULL, 'BraumAce', 'https://cloud.braumace.cn/f/KXrh9/logo.png',
         '系统管理员', 'admin');
 
 -- 题库表初始数据
