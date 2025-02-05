@@ -8,6 +8,7 @@ import store, { AppDispatch } from "@/stores";
 import { getLoginUserUsingGet } from "@/api/userController";
 import { usePathname } from "next/navigation";
 import AccessLayout from "@/access/AccessLayout";
+import { setLoginUser } from "@/stores/loginUser";
 
 /**
  * 全局初始化逻辑
@@ -32,6 +33,7 @@ const InitLayout: React.FC<
     ) {
       if (res.data) {
         // 更新全局用户状态
+        dispatch(setLoginUser(res.data));
       } else {}
     }
   }, []);
