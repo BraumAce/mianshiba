@@ -42,6 +42,12 @@ const UpdateModal: React.FC<Props> = (props) => {
     return <></>;
   }
 
+  // 表单转换
+  let initValues = { ...oldData };
+  if (oldData.tags) {
+    initValues.tags = JSON.parse(oldData.tags) || [];
+  }
+
   return (
     <Modal
       destroyOnClose
@@ -56,7 +62,7 @@ const UpdateModal: React.FC<Props> = (props) => {
         type="form"
         columns={columns}
         form={{
-          initialValues: oldData,
+          initialValues: initValues,
         }}
         onSubmit={async (values: API.QuestionAddRequest) => {
           const success = await handleUpdate({
