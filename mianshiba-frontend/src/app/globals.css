@@ -105,3 +105,8 @@ a {
     color-scheme: dark;
   }
 }
+
+.max-width-content {
+  max-width: 1200px;
+  margin: 0 auto;
+}
