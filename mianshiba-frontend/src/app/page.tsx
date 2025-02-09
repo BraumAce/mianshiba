@@ -27,9 +27,10 @@ export default async function HomePage() {
     questionBankList = (questionBankRes as any).data.records ?? [];
   } catch (e) {
     if (e instanceof Error) {
-      console.error('获取题库列表失败.' + e.message);
+      console.error('获取题库列表失败：' + e.message);
+    } else {
+      console.error('获取题库列表失败.');
     }
-    console.error('获取题库列表失败.');
   }
 
   try {
@@ -41,9 +42,10 @@ export default async function HomePage() {
     questionList = (questionRes as any).data.records ?? [];
   } catch (e) {
     if (e instanceof Error) {
-      console.error('获取题库列表失败.' + e.message);
+      console.error('获取题库列表失败：' + e.message);
+    } else {
+      console.error('获取题库列表失败.');
     }
-    console.error('获取题库列表失败.');
   }
 
   return <div id="homePage" className="max-width-content">
