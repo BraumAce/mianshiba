@@ -1,4 +1,5 @@
 "use server";
+
 import Title from "antd/es/typography/Title";
 import { message } from "antd";
 import { listQuestionVoByPageUsingPost } from "@/api/questionController";
@@ -18,7 +19,7 @@ export default async function QuestionsPage({ searchParams }) {
 
   try {
     const res = await listQuestionVoByPageUsingPost({
-      searchText,
+      title: searchText,
       pageSize: 12,
       sortField: "createTime",
       sortOrder: "descend",

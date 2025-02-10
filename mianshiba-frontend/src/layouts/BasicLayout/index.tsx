@@ -1,13 +1,13 @@
 "use client";
+
 import {
   GithubFilled,
   InfoCircleFilled,
   LogoutOutlined,
   QuestionCircleFilled,
-  SearchOutlined,
 } from "@ant-design/icons";
 import { menus } from "../../../config/menus";
-import { Dropdown, Input, message, theme } from "antd";
+import { Dropdown, message } from "antd";
 import { ProLayout } from "@ant-design/pro-components";
 import { usePathname, useRouter } from "next/navigation";
 import React from "react";
@@ -18,50 +18,10 @@ import "./index.css";
 import { AppDispatch, RootState } from "@/stores";
 import { useDispatch, useSelector } from "react-redux";
 import getAccessibleMenus from "@/access/menuAccess";
-import { router } from "next/client";
 import { userLogoutUsingPost } from "@/api/userController";
 import { setLoginUser } from "@/stores/loginUser";
 import { DEFAULT_USER } from "@/constants/user";
-
-/**
- * 搜索条
- * @constructor
- */
-const SearchInput = () => {
-  const { token } = theme.useToken();
-  return (
-    <div
-      key="SearchOutlined"
-      aria-hidden
-      style={{
-        display: "flex",
-        alignItems: "center",
-        marginInlineEnd: 24,
-      }}
-      onMouseDown={(e) => {
-        e.stopPropagation();
-        e.preventDefault();
-      }}
-    >
-      <Input
-        style={{
-          borderRadius: 4,
-          marginInlineEnd: 12,
-          backgroundColor: token.colorBgTextHover,
-        }}
-        prefix={
-          <SearchOutlined
-            style={{
-              color: token.colorTextLightSolid,
-            }}
-          />
-        }
-        placeholder="搜索"
-        variant="borderless"
-      />
-    </div>
-  );
-};
+import SearchInput from "@/layouts/BasicLayout/components/SearchInput";
 
 interface Props {
   children: React.ReactNode;
@@ -90,7 +50,11 @@ export default function BasicLayout({ children }: Props) {
       dispatch(setLoginUser(DEFAULT_USER));
       router.push("/user/login");
     } catch (e) {
-      message.error("操作失败，" + e.message);
+      if (e instanceof Error) {
+        message.error("操作失败：" + e.message);
+      } else {
+        message.error("操作失败.");
+      }
     }
     return;
   }
