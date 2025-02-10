@@ -1,13 +1,18 @@
 "use client";
 
-import { useRef } from "react";
-import {ActionType, ProColumns, ProTable} from "@ant-design/pro-components";
+import { useRef, useState } from "react";
+import { ActionType, ProColumns, ProTable } from "@ant-design/pro-components";
 import Link from "next/link";
 import TagList from "@/components/TagList";
-import {TablePaginationConfig} from "antd";
+import { TablePaginationConfig } from "antd";
 import { listQuestionVoByPageUsingPost } from "@/api/questionController";
 
 interface Props {
+  // 默认值（用户展示服务端渲染的数据）
+  defaultQuestionList: API.QuestionVO[];
+  defaultTotal: number;
+  // 默认搜索条件
+  defaultSearchParams: API.QuestionQueryRequest;
 }
 
 /**
@@ -15,7 +20,18 @@ interface Props {
  * @constructor
  */
 export default function QuestionTable(props: Props) {
+  const { defaultQuestionList, defaultTotal, defaultSearchParams = {} } = props;
   const actionRef = useRef<ActionType>();
+  // 题目列表
+  const [questionList, setQuestionList] = useState<API.QuestionVO[]>(
+    defaultQuestionList || [],
+  );
+  // 题目总数
+  const [total, setTotal] = useState<number>(
+    defaultTotal || 0,
+  );
+  // 判断是否首次加载
+  const [isFirstLoad, setIsFirstLoad] = useState<boolean>(true);
 
   /**
    * 表格列配置
@@ -35,7 +51,9 @@ export default function QuestionTable(props: Props) {
       fieldProps: {
         mode: "tags"
       },
-      render: (_, record) => <TagList tagList={record.tagList} />,
+      render: (_, record) => {
+        return <TagList tagList={record.tagList} />;
+      },
     },
   ];
 
@@ -48,26 +66,45 @@ export default function QuestionTable(props: Props) {
         search={{
           labelWidth: "auto",
         }}
+        form={{
+          initialValues: defaultSearchParams,
+        }}
+        dataSource={questionList}
         pagination={
           {
             pageSize: 12,
-            showTotal: (total) => `总共 ${total} 条`,
+            showTotal: (total) => `共 ${total} 条`,
             showSizeChanger: false,
+            total,
           } as TablePaginationConfig
         }
+
         request={async (params, sort, filter) => {
-          const sortField = Object.keys(sort)?.[0];
-          const sortOrder = sort?.[sortField];
-          // 请求
+          // 首次加载时，不请求服务端
+          if (isFirstLoad) {
+            setIsFirstLoad(false);
+            if (defaultQuestionList && defaultTotal) {
+              return;
+            }
+          }
+
+          const sortField = Object.keys(sort)?.[0] || 'createTime';
+          const sortOrder = sort?.[sortField] || 'descend';
+
           const { data, code } = await listQuestionVoByPageUsingPost({
             ...params,
             sortField,
             sortOrder,
             ...filter,
           } as API.UserQueryRequest);
+
           // 更新结果
-          const newTotal = Number(data.total) || 0;
-          const newData = data.records || [];
+          const newData = data?.records || [];
+          const newTotal = data?.total || 0;
+          // 更新状态
+          setQuestionList(newData);
+          setTotal(newTotal);
+
           return {
             success: code === 0,
             data: newData,
