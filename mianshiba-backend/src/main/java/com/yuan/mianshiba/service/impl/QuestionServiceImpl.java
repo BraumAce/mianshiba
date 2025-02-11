@@ -214,12 +214,14 @@ public class QuestionServiceImpl extends ServiceImpl<QuestionMapper, Question> i
                         .map(QuestionBankQuestion::getQuestionId)
                         .collect(Collectors.toSet());
                 queryWrapper.in("id", questionIdSet);
+            } else {
+                // 题库为空，则返回空列表
+                return new Page<>(current, size, 0);
             }
         }
 
         // 查询数据库
-        Page<Question> questionPage = this.page(new Page<>(current, size), queryWrapper);
-        return questionPage;
+	    return this.page(new Page<>(current, size), queryWrapper);
     }
 
 }
