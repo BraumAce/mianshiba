@@ -18,6 +18,7 @@ import com.yuan.mianshiba.model.entity.Question;
 import com.yuan.mianshiba.model.entity.QuestionBank;
 import com.yuan.mianshiba.model.entity.User;
 import com.yuan.mianshiba.model.vo.QuestionBankVO;
+import com.yuan.mianshiba.model.vo.QuestionVO;
 import com.yuan.mianshiba.service.QuestionBankService;
 import com.yuan.mianshiba.service.QuestionService;
 import com.yuan.mianshiba.service.UserService;
@@ -152,8 +153,13 @@ public class QuestionBankController {
         if (needQueryQuestionList) {
             QuestionQueryRequest questionQueryRequest = new QuestionQueryRequest();
             questionQueryRequest.setQuestionBankId(id);
+            // 分页参数
+            questionQueryRequest.setPageSize(questionBankQueryRequest.getPageSize());
+            questionQueryRequest.setCurrent(questionBankQueryRequest.getCurrent());
+            // 封装 question => questionVO
             Page<Question> questionPage = questionService.listQuestionByPage(questionQueryRequest);
-            questionBankVO.setQuestionPage(questionPage);
+            Page<QuestionVO> questionVOPage = questionService.getQuestionVOPage(questionPage, request);
+            questionBankVO.setQuestionPage(questionVOPage);
         }
         // 获取封装类
         return ResultUtils.success(questionBankVO);
