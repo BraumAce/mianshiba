@@ -12,9 +12,9 @@ import "./index.css";
  * 题库详情页面
  * @constructor
  */
-export default async function BankPage({params}) {
+export default async function BankPage({ params }) {
   // 题库id
-  const {questionBankId} = params;
+  const { questionBankId } = params;
   let bank = undefined;
 
   try {
