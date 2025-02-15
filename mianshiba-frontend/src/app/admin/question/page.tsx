@@ -10,6 +10,7 @@ import { Button, message, Space, Typography } from 'antd';
 import React, { useRef, useState } from 'react';
 import TagList from "@/components/TagList";
 import MdEditor from "@/components/MdEditor";
+import UpdateBankModal from "@/app/admin/question/components/UpdateBankModal";
 
 /**
  * 题目管理页面
@@ -21,6 +22,8 @@ const QuestionAdminPage: React.FC = () => {
   const [createModalVisible, setCreateModalVisible] = useState<boolean>(false);
   // 是否显示更新窗口
   const [updateModalVisible, setUpdateModalVisible] = useState<boolean>(false);
+  // 是否显示更新所属题库的弹窗
+  const [updateBankModalVisible, setUpdateBankModalVisible] = useState<boolean>(false);
   const actionRef = useRef<ActionType>();
   // 当前题目点击的数据
   const [currentRow, setCurrentRow] = useState<API.Question>();
@@ -57,6 +60,12 @@ const QuestionAdminPage: React.FC = () => {
       title: "id",
       dataIndex: "id",
       valueType: "text",
+      hideInForm: true,
+    },
+    {
+      title: "所属题库",
+      dataIndex: "questionBankId",
+      hideInTable: true,
       hideInForm: true,
     },
     {
@@ -161,6 +170,14 @@ const QuestionAdminPage: React.FC = () => {
           >
             修改
           </Typography.Link>
+          <Typography.Link
+            onClick={() => {
+              setCurrentRow(record);
+              setUpdateBankModalVisible(true);
+            }}
+          >
+            修改所属题库
+          </Typography.Link>
           <Typography.Link type="danger" onClick={() => handleDelete(record)}>
             删除
           </Typography.Link>
@@ -175,6 +192,9 @@ const QuestionAdminPage: React.FC = () => {
         headerTitle={'查询表格'}
         actionRef={actionRef}
         rowKey="key"
+        scroll={{
+          x: true,
+        }}
         search={{
           labelWidth: 120,
         }}
@@ -230,6 +250,13 @@ const QuestionAdminPage: React.FC = () => {
         }}
         onCancel={() => {
           setUpdateModalVisible(false);
+        }}
+      />
+      <UpdateBankModal
+        questionId={currentRow?.id}
+        visible={updateBankModalVisible}
+        onCancel={() => {
+          setUpdateBankModalVisible(false);
         }}
       />
     </PageContainer>

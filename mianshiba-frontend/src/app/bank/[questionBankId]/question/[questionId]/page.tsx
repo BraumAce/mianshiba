@@ -6,9 +6,9 @@ import { getQuestionVoByIdUsingGet } from "@/api/questionController";
 import { Content } from "antd/es/layout/layout";
 import Sider from "antd/es/layout/Sider";
 import Title from "antd/es/typography/Title";
-import "./index.css";
 import Link from "next/link";
 import QuestionCard from "@/components/QuestionCard";
+import "./index.css";
 
 /**
  * 题库题目详情页面
