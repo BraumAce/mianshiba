@@ -110,9 +110,12 @@ public class QuestionServiceImpl extends ServiceImpl<QuestionMapper, Question> i
             }
         }
         // 精确查询
-        queryWrapper.ne(ObjectUtils.isNotEmpty(notId), "id", notId);
-        queryWrapper.eq(ObjectUtils.isNotEmpty(id), "id", id);
-        queryWrapper.eq(ObjectUtils.isNotEmpty(userId), "userId", userId);
+        queryWrapper.ne(ObjectUtils.isNotEmpty(notId), "id", notId)
+		            .eq(ObjectUtils.isNotEmpty(id), String.valueOf(questionQueryRequest.getId()), id)
+                    .eq(ObjectUtils.isNotEmpty(userId), String.valueOf(questionQueryRequest.getUserId()), userId);
+
+//        queryWrapper.eq(ObjectUtils.isNotEmpty(id), "id", id);
+//        queryWrapper.eq(ObjectUtils.isNotEmpty(userId), "userId", userId);
         // 排序规则
         queryWrapper.orderBy(SqlUtils.validSortField(sortField),
                 sortOrder.equals(CommonConstant.SORT_ORDER_ASC),
