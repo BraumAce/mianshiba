@@ -5,6 +5,7 @@ import {
   InfoCircleFilled,
   LogoutOutlined,
   QuestionCircleFilled,
+  UserOutlined,
 } from "@ant-design/icons";
 import { menus } from "../../../config/menus";
 import { Dropdown, message } from "antd";
@@ -92,15 +93,22 @@ export default function BasicLayout({ children }: Props) {
                 menu={{
                   items: [
                     {
+                      key: "userCenter",
+                      icon: <UserOutlined />,
+                      label: "个人中心",
+                    },
+                    {
                       key: "logout",
                       icon: <LogoutOutlined />,
                       label: "退出登录",
                     },
                   ],
-                  onClick:(event: { key: React.Key }) => {
+                  onClick: async (event: { key: React.Key }) => {
                     const { key } = event;
                     if (key === "logout") {
                       userLogout();
+                    } else if (key == "userCenter") {
+                      router.push("/user/center");
                     }
                   },
                 }}
