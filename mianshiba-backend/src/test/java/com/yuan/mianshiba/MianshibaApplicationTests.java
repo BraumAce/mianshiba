@@ -11,7 +11,7 @@ import org.springframework.boot.test.context.SpringBootTest;
  * @author BraumAce
  */
 @SpringBootTest
-class MainApplicationTests {
+class MianshibaApplicationTests {
 
     @Resource
     private WxOpenConfig wxOpenConfig;
