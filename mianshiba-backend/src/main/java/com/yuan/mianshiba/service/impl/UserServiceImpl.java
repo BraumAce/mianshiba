@@ -1,28 +1,22 @@
 package com.yuan.mianshiba.service.impl;
 
 import cn.hutool.core.collection.CollUtil;
+import cn.hutool.core.util.RandomUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.yuan.mianshiba.common.ErrorCode;
 import com.yuan.mianshiba.constant.CommonConstant;
 import com.yuan.mianshiba.constant.RedisConstant;
 import com.yuan.mianshiba.constant.UserConstant;
 import com.yuan.mianshiba.exception.BusinessException;
 import com.yuan.mianshiba.mapper.UserMapper;
-import com.yuan.mianshiba.model.vo.LoginUserVO;
-import com.yuan.mianshiba.service.UserService;
-import com.yuan.mianshiba.common.ErrorCode;
 import com.yuan.mianshiba.model.dto.user.UserQueryRequest;
 import com.yuan.mianshiba.model.entity.User;
 import com.yuan.mianshiba.model.enums.UserRoleEnum;
+import com.yuan.mianshiba.model.vo.LoginUserVO;
 import com.yuan.mianshiba.model.vo.UserVO;
+import com.yuan.mianshiba.service.UserService;
 import com.yuan.mianshiba.utils.SqlUtils;
-
-import java.time.LocalDate;
-import java.time.Year;
-import java.util.*;
-import java.util.stream.Collectors;
-import javax.annotation.Resource;
-import javax.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import me.chanjar.weixin.common.bean.WxOAuth2UserInfo;
 import org.apache.commons.lang3.StringUtils;
@@ -31,6 +25,14 @@ import org.redisson.api.RedissonClient;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.util.DigestUtils;
+
+import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.BitSet;
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * 用户服务实现
@@ -285,8 +287,8 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         // 获取当前日期是一年中的第几天, 从 1 开始计数
         int offset = date.getDayOfYear();
         // 判断当前日期是否已经签到
-        if (signInBitSet.get(offset)) {
-            return signInBitSet.set(offset, true);
+        if (!signInBitSet.get(offset)) {
+            signInBitSet.set(offset, true);
         }
         return true;
     }

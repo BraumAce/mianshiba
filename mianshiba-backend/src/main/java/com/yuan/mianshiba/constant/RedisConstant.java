@@ -1,11 +1,16 @@
 package com.yuan.mianshiba.constant;
 
+/**
+ * Redis 常量
+ *
+ * @author BraumAce
+ */
 public interface RedisConstant {
 
 	/**
 	 * 用户签到记录的 Redis key 前缀
 	 */
-	String USER_SIGN_IN_REDIS_KEY_PREFIX = "user:signins:";
+	String USER_SIGN_IN_REDIS_KEY_PREFIX = "user:signins";
 
 	/**
 	 * 获取用户签到记录的 Redis key
