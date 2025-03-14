@@ -130,6 +130,7 @@ export default function BasicLayout({ children }: Props) {
               key={"github"}
               href={"https://github.com/BraumAce/mianshiba"}
               target={"_blank"}
+              rel={"noopener noreferrer"}
             >
               <GithubFilled key="GithubFilled" />
             </a>,
@@ -138,7 +139,7 @@ export default function BasicLayout({ children }: Props) {
         // 标题区
         headerTitleRender={(logo, title, _) => {
           return (
-            <a>
+            <a href="/">
               {logo}
               {title}
             </a>

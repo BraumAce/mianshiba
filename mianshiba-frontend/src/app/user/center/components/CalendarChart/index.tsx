@@ -15,9 +15,11 @@ interface Props { }
 const CalendarChart = (props: Props) => {
     const { } = props;
 
-    // 签到日期列表（[1, 200]，表示第 1 和第 200 天有签到记录）
     const [dataList, setDataList] = useState<number[]>([]);
-    const year = new Date().getFullYear();
+    const [year, setYear] = React.useState<number>(2024);
+    React.useEffect(() => {
+        setYear(new Date().getFullYear());
+    }, []);
 
     // 请求后端获取数据
     const fetchDataList = async () => {

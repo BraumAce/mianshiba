@@ -5,7 +5,7 @@ import { ActionType, ProColumns, ProTable } from "@ant-design/pro-components";
 import Link from "next/link";
 import TagList from "@/components/TagList";
 import { TablePaginationConfig } from "antd";
-import { listQuestionVoByPageUsingPost } from "@/api/questionController";
+import { searchQuestionVoByPageUsingPost } from "@/api/questionController";
 
 interface Props {
   // 默认值（用户展示服务端渲染的数据）
@@ -37,6 +37,12 @@ export default function QuestionTable(props: Props) {
    * 表格列配置
    */
   const columns: ProColumns<API.QuestionVO>[] = [
+    {
+      title: "搜索",
+      dataIndex: "searchText",
+      valueType: "text",
+      hideInTable: true,
+    },
     {
       title: "题目",
       dataIndex: "title",
@@ -88,10 +94,10 @@ export default function QuestionTable(props: Props) {
             }
           }
 
-          const sortField = Object.keys(sort)?.[0] || 'createTime';
+          const sortField = Object.keys(sort)?.[0] || '_score';
           const sortOrder = sort?.[sortField] || 'descend';
 
-          const { data, code } = await listQuestionVoByPageUsingPost({
+          const { data, code } = await searchQuestionVoByPageUsingPost({
             ...params,
             sortField,
             sortOrder,
