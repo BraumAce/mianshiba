@@ -1,9 +1,7 @@
 import { Button, Form, message, Modal, Select } from "antd";
 import React, { useEffect, useState } from "react";
 import { listQuestionBankVoByPageUsingPost } from "@/api/questionBankController";
-import {
-    batchRemoveQuestionsFromBankUsingPost,
-} from "@/api/questionBankQuestionController";
+import { batchRemoveQuestionsFromBankUsingPost } from "@/api/questionBankQuestionController";
 
 interface Props {
     questionIdList?: number[];
@@ -20,36 +18,8 @@ interface Props {
 const BatchRemoveQuestionsToBankModal: React.FC<Props> = (props) => {
     const { questionIdList = [], visible, onCancel, onSubmit } = props;
     const [form] = Form.useForm();
-    const [questionBankList, setQuestionBankList] = useState<
-        API.QuestionBankVO[]
-    >([]);
-
-    /**
-     * 提交
-     *
-     * @param values
-     */
-    const doSubmit = async (
-        values: API.QuestionBankQuestionBatchRemoveRequest,
-    ) => {
-        const hide = message.loading("正在操作");
-        const questionBankId = values.questionBankId;
-        if (!questionBankId) {
-            return;
-        }
-        try {
-            await batchRemoveQuestionsFromBankUsingPost({
-                questionBankId,
-                questionIdList,
-            });
-            hide();
-            message.success("操作成功");
-            onSubmit?.();
-        } catch (error: any) {
-            hide();
-            message.error("操作失败，" + error.message);
-        }
-    };
+    const [messageApi, contextHolder] = message.useMessage();
+    const [questionBankList, setQuestionBankList] = useState<API.QuestionBankVO[]>([]);
 
     // 获取题库列表
     const getQuestionBankList = async () => {
@@ -64,13 +34,40 @@ const BatchRemoveQuestionsToBankModal: React.FC<Props> = (props) => {
             });
             setQuestionBankList(res.data?.records ?? []);
         } catch (e: any) {
-            message.error("获取题库列表失败，" + e.message);
+            messageApi.error("获取题库列表失败，" + e.message);
         }
     };
 
     useEffect(() => {
         getQuestionBankList();
     }, []);
+
+    /**
+     * 提交
+     *
+     * @param values
+     */
+    const doSubmit = async (
+        values: API.QuestionBankQuestionBatchRemoveRequest,
+    ) => {
+        const hide = messageApi.loading("正在操作");
+        const questionBankId = values.questionBankId;
+        if (!questionBankId) {
+            return;
+        }
+        try {
+            await batchRemoveQuestionsFromBankUsingPost({
+                questionBankId,
+                questionIdList,
+            });
+            hide();
+            messageApi.success("操作成功");
+            onSubmit?.();
+        } catch (error: any) {
+            hide();
+            messageApi.error("操作失败，" + error.message);
+        }
+    };
 
     return (
         <Modal
@@ -82,7 +79,12 @@ const BatchRemoveQuestionsToBankModal: React.FC<Props> = (props) => {
                 onCancel?.();
             }}
         >
-            <Form form={form} style={{ marginTop: 24 }} onFinish={doSubmit}>
+            {contextHolder}
+            <Form
+                form={form}
+                style={{ marginTop: 24 }}
+                onFinish={doSubmit}
+            >
                 <Form.Item label="选择题库" name="questionBankId">
                     <Select
                         style={{ width: "100%" }}

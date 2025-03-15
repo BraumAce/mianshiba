@@ -1,7 +1,7 @@
 import { Button, Form, Modal, Select, message } from "antd";
 import React, { useEffect, useState } from "react";
-import { batchAddQuestionsToBankUsingPost } from "@/api/questionBankQuestionController";
 import { listQuestionBankVoByPageUsingPost } from "@/api/questionBankController";
+import { batchAddQuestionsToBankUsingPost } from "@/api/questionBankQuestionController";
 
 interface Props {
     questionIdList?: number[];
@@ -19,9 +19,7 @@ const BatchAddQuestionsToBankModal: React.FC<Props> = (props) => {
     const { questionIdList = [], visible, onSubmit, onCancel } = props;
     const [form] = Form.useForm();
     const [messageApi, contextHolder] = message.useMessage();
-    const [questionBankList, setQuestionBankList] = useState<
-        API.QuestionBankVO[]
-    >([]);
+    const [questionBankList, setQuestionBankList] = useState<API.QuestionBankVO[]>([]);
 
     // 获取题库列表
     const getQuestionBankList = async () => {
