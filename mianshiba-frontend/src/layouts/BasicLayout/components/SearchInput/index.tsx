@@ -16,13 +16,11 @@ const SearchInput = () => {
       style={{
         display: "flex",
         alignItems: "center",
-        marginInlineEnd: 24,
       }}
     >
       <Input.Search
         style={{
           borderRadius: 4,
-          marginInlineEnd: 12,
         }}
         placeholder="搜索题目"
         onSearch={(value) => {

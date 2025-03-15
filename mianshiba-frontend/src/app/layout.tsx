@@ -2,14 +2,16 @@
 
 import React, { useCallback, useEffect } from "react";
 import { AntdRegistry } from "@ant-design/nextjs-registry";
-import BasicLayout from "@/layouts/BasicLayout";
-import "./globals.css";
-import {Provider, useDispatch} from "react-redux";
+import { Provider, useDispatch } from "react-redux";
 import store, { AppDispatch } from "@/stores";
 import { getLoginUserUsingGet } from "@/api/userController";
 import { usePathname } from "next/navigation";
 import AccessLayout from "@/access/AccessLayout";
 import { setLoginUser } from "@/stores/loginUser";
+import "./globals.css";
+import dynamic from 'next/dynamic'
+
+const NoSSR = dynamic(() => import('../layouts/BasicLayout'), { ssr: false })
 
 /**
  * 全局初始化逻辑
@@ -37,7 +39,7 @@ const InitLayout: React.FC<
         dispatch(setLoginUser(res.data));
       } else {}
     }
-  }, []);
+  }, [dispatch, pathname]);
 
   // 只执行一次
   useEffect(() => {
@@ -58,9 +60,9 @@ export default function RootLayout({
         <AntdRegistry>
           <Provider store={store}>
             <InitLayout>
-              <BasicLayout>
+              <NoSSR>
                 <AccessLayout>{children}</AccessLayout>
-              </BasicLayout>
+              </NoSSR>
             </InitLayout>
           </Provider>
         </AntdRegistry>

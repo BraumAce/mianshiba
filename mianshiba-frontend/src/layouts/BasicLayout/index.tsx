@@ -2,9 +2,7 @@
 
 import {
   GithubFilled,
-  InfoCircleFilled,
   LogoutOutlined,
-  QuestionCircleFilled,
   UserOutlined,
 } from "@ant-design/icons";
 import { menus } from "../../../config/menus";
@@ -50,15 +48,10 @@ export default function BasicLayout({ children }: Props) {
       message.success("已退出登录");
       dispatch(setLoginUser(DEFAULT_USER));
       router.push("/user/login");
-    } catch (e) {
-      if (e instanceof Error) {
-        message.error("操作失败：" + e.message);
-      } else {
-        message.error("操作失败.");
-      }
+    } catch (e: any) {
+      message.error("操作失败：" + e.message);
     }
-    return;
-  }
+  };
 
   return (
     <div
@@ -84,11 +77,11 @@ export default function BasicLayout({ children }: Props) {
         }}
         // 头像区
         avatarProps={{
-          src: loginUser.userAvatar || "/assets/logo.png",
+          src: loginUser?.userAvatar || "/assets/logo.png",
           size: "small",
-          title: loginUser.userName || "面试吧",
+          title: loginUser?.userName || "面试吧",
           render: (props, dom) => {
-            return loginUser.id ? (
+            return loginUser?.id ? (
               <Dropdown
                 menu={{
                   items: [
@@ -123,16 +116,14 @@ export default function BasicLayout({ children }: Props) {
         // 操作渲染
         actionsRender={() => {
           return [
-            <SearchInput key={"search"} />,
-            <InfoCircleFilled key="InfoCircleFilled" />,
-            <QuestionCircleFilled key="QuestionCircleFilled" />,
+            <SearchInput key="search" />,
             <a
               key={"github"}
               href={"https://github.com/BraumAce/mianshiba"}
               target={"_blank"}
               rel={"noopener noreferrer"}
             >
-              <GithubFilled key="GithubFilled" />
+              <GithubFilled />
             </a>,
           ];
         }}
@@ -151,9 +142,7 @@ export default function BasicLayout({ children }: Props) {
         }}
         onMenuHeaderClick={(e) => console.log(e)}
         // 菜单项数据
-        menuDataRender={() => {
-          return getAccessibleMenus(loginUser, menus);
-        }}
+        menuDataRender={React.useCallback(() => getAccessibleMenus(loginUser, menus), [loginUser])}
         // 菜单渲染
         menuItemRender={(item, dom) => (
           <Link href={item.path || "/"} target={item.target}>

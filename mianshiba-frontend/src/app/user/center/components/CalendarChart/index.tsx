@@ -16,10 +16,7 @@ const CalendarChart = (props: Props) => {
     const { } = props;
 
     const [dataList, setDataList] = useState<number[]>([]);
-    const [year, setYear] = React.useState<number>(2024);
-    React.useEffect(() => {
-        setYear(new Date().getFullYear());
-    }, []);
+    const year = new Date().getFullYear();
 
     // 请求后端获取数据
     const fetchDataList = async () => {
