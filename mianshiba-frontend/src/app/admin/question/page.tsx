@@ -2,7 +2,7 @@
 
 import CreateModal from './components/CreateModal';
 import UpdateModal from './components/UpdateModal';
-import { deleteQuestionUsingPost, listQuestionByPageUsingPost } from '@/api/questionController';
+import { batchDeleteQuestionsUsingPost, deleteQuestionUsingPost, listQuestionByPageUsingPost } from '@/api/questionController';
 import { PlusOutlined } from '@ant-design/icons';
 import type { ActionType, ProColumns } from '@ant-design/pro-components';
 import { PageContainer, ProTable } from '@ant-design/pro-components';
@@ -66,6 +66,25 @@ const QuestionAdminPage: React.FC = () => {
       hide();
       message.error('删除失败，' + error.message);
       return false;
+    }
+  };
+
+  /**
+   * 批量删除
+   * @param questionIdList
+   */
+  const handleBatchDelete = async (questionIdList: number[]) => {
+    const hide = message.loading("正在操作");
+    try {
+      await batchDeleteQuestionsUsingPost({
+        questionIdList,
+      });
+      hide();
+      message.success("操作成功");
+      actionRef?.current?.reload();
+    } catch (error: any) {
+      hide();
+      message.error("操作失败，" + error.message);
     }
   };
 
@@ -265,6 +284,7 @@ const QuestionAdminPage: React.FC = () => {
                 description="你确定要删除这些题目吗？"
                 onConfirm={() => {
                   // 批量删除题目
+                  handleBatchDelete(selectedRowKeys as number[]);
                 }}
                 okText="Yes"
                 cancelText="No"
