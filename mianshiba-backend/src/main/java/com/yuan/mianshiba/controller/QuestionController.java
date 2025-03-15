@@ -10,10 +10,7 @@ import com.yuan.mianshiba.common.ResultUtils;
 import com.yuan.mianshiba.constant.UserConstant;
 import com.yuan.mianshiba.exception.BusinessException;
 import com.yuan.mianshiba.exception.ThrowUtils;
-import com.yuan.mianshiba.model.dto.question.QuestionAddRequest;
-import com.yuan.mianshiba.model.dto.question.QuestionEditRequest;
-import com.yuan.mianshiba.model.dto.question.QuestionQueryRequest;
-import com.yuan.mianshiba.model.dto.question.QuestionUpdateRequest;
+import com.yuan.mianshiba.model.dto.question.*;
 import com.yuan.mianshiba.model.entity.Question;
 import com.yuan.mianshiba.model.entity.User;
 import com.yuan.mianshiba.model.vo.QuestionVO;
@@ -251,6 +248,13 @@ public class QuestionController {
 
     // endregion
 
+    /**
+     * 搜索题目（从 ES 中搜索）
+     *
+     * @param questionQueryRequest
+     * @param request
+     * @return
+     */
     @PostMapping("/search/page/vo")
     public BaseResponse<Page<QuestionVO>> searchQuestionVOByPage(@RequestBody QuestionQueryRequest questionQueryRequest,
                                                                  HttpServletRequest request) {
@@ -259,6 +263,22 @@ public class QuestionController {
         ThrowUtils.throwIf(size > 200, ErrorCode.PARAMS_ERROR);
         Page<Question> questionPage = questionService.searchFromEs(questionQueryRequest);
         return ResultUtils.success(questionService.getQuestionVOPage(questionPage, request));
+    }
+
+    /**
+     * 批量删除题目（仅管理员可用）
+     *
+     * @param questionBatchDeleteRequest
+     * @param request
+     * @return
+     */
+    @PostMapping("/delete/batch")
+    @AuthCheck(mustRole = UserConstant.ADMIN_ROLE)
+    public BaseResponse<Boolean> batchDeleteQuestions(@RequestBody QuestionBatchDeleteRequest questionBatchDeleteRequest,
+                                                      HttpServletRequest request) {
+        ThrowUtils.throwIf(questionBatchDeleteRequest == null, ErrorCode.PARAMS_ERROR);
+        questionService.batchDeleteQuestions(questionBatchDeleteRequest.getQuestionIdList());
+        return ResultUtils.success(true);
     }
 
 }
