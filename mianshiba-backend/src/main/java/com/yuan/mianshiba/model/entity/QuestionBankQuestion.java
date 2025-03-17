@@ -19,9 +19,9 @@ import java.util.Date;
 @Data
 public class QuestionBankQuestion implements Serializable {
     /**
-     * id，指定雪花算法生成
+     * id
      */
-    @TableId(type = IdType.ASSIGN_ID)
+    @TableId(type = IdType.AUTO)
     private Long id;
 
     /**
