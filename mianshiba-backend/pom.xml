@@ -94,7 +94,13 @@
             <artifactId>spring-cloud-starter-alibaba-sentinel</artifactId>
             <version>2021.0.5.0</version>
         </dependency>
-        <!-- https://cloud.tencent.com/document/product/436/10199-->
+        <!-- https://nacos.io/docs/next/ecology/use-nacos-with-spring-boot/ -->
+        <dependency>
+            <groupId>com.alibaba.boot</groupId>
+            <artifactId>nacos-config-spring-boot-starter</artifactId>
+            <version>0.2.12</version>
+        </dependency>
+        <!-- https://cloud.tencent.com/document/product/436/10199 -->
         <dependency>
             <groupId>com.qcloud</groupId>
             <artifactId>cos_api</artifactId>
@@ -111,7 +117,7 @@
             <artifactId>easyexcel</artifactId>
             <version>3.1.1</version>
         </dependency>
-        <!-- https://hutool.cn/docs/index.html#/-->
+        <!-- https://hutool.cn/docs/index.html#/ -->
         <dependency>
             <groupId>cn.hutool</groupId>
             <artifactId>hutool-all</artifactId>

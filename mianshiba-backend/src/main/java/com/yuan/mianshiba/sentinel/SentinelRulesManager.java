@@ -11,6 +11,11 @@ import javax.annotation.PostConstruct;
 import java.util.Arrays;
 import java.util.Collections;
 
+/**
+ * Sentinel 规则管理器
+ *
+ * @author BraumAce
+ */
 @Component
 public class SentinelRulesManager {
 
