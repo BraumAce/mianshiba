@@ -1,6 +1,7 @@
 package com.yuan.mianshiba.controller;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.jd.platform.hotkey.client.callback.JdHotKeyStore;
 import com.yuan.mianshiba.annotation.AuthCheck;
 import com.yuan.mianshiba.common.BaseResponse;
 import com.yuan.mianshiba.common.DeleteRequest;
@@ -143,6 +144,16 @@ public class QuestionBankController {
         ThrowUtils.throwIf(questionBankQueryRequest == null, ErrorCode.PARAMS_ERROR);
         Long id = questionBankQueryRequest.getId();
         ThrowUtils.throwIf(id <= 0, ErrorCode.PARAMS_ERROR);
+
+        // hotKey 探测
+        String key = "bank_detail_" + id;
+        if (JdHotKeyStore.isHotKey(key)) {
+            Object cacheQuestionBankVO = JdHotKeyStore.get(key);
+            if (cacheQuestionBankVO != null) {
+                return ResultUtils.success((QuestionBankVO) cacheQuestionBankVO);
+            }
+        }
+
         // 查询数据库
         QuestionBank questionBank = questionBankService.getById(id);
         ThrowUtils.throwIf(questionBank == null, ErrorCode.NOT_FOUND_ERROR);
@@ -161,6 +172,8 @@ public class QuestionBankController {
             Page<QuestionVO> questionVOPage = questionService.getQuestionVOPage(questionPage, request);
             questionBankVO.setQuestionPage(questionVOPage);
         }
+        // 设置本地缓存（不是 hotKey，则不设置）
+        JdHotKeyStore.smartSet(key, questionBankVO);
         // 获取封装类
         return ResultUtils.success(questionBankVO);
     }
