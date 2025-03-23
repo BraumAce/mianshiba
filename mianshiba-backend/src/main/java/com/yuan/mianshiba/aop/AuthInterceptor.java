@@ -22,8 +22,8 @@ import org.springframework.web.context.request.ServletRequestAttributes;
  *
  * @author BraumAce
  */
-@Aspect
-@Component
+//@Aspect
+//@Component
 public class AuthInterceptor {
 
     @Resource

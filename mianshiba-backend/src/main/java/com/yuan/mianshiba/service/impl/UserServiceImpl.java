@@ -1,7 +1,7 @@
 package com.yuan.mianshiba.service.impl;
 
+import cn.dev33.satoken.stp.StpUtil;
 import cn.hutool.core.collection.CollUtil;
-import cn.hutool.core.util.RandomUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.yuan.mianshiba.common.ErrorCode;
@@ -15,6 +15,7 @@ import com.yuan.mianshiba.model.entity.User;
 import com.yuan.mianshiba.model.enums.UserRoleEnum;
 import com.yuan.mianshiba.model.vo.LoginUserVO;
 import com.yuan.mianshiba.model.vo.UserVO;
+import com.yuan.mianshiba.satoken.DeviceUtils;
 import com.yuan.mianshiba.service.UserService;
 import com.yuan.mianshiba.utils.SqlUtils;
 import lombok.extern.slf4j.Slf4j;
@@ -32,6 +33,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 /**
@@ -114,7 +116,12 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
             throw new BusinessException(ErrorCode.PARAMS_ERROR, "用户不存在或密码错误");
         }
         // 3. 记录用户的登录态
-        request.getSession().setAttribute(UserConstant.USER_LOGIN_STATE, user);
+//        request.getSession().setAttribute(UserConstant.USER_LOGIN_STATE, user);
+        // 使用 sa-token 登录，判断设备实现同端登录互斥
+        StpUtil.login(user.getId(), DeviceUtils.getRequestDevice(request));
+        String deviceType = StpUtil.getLoginDeviceType();
+        StpUtil.getSession().set(UserConstant.USER_LOGIN_STATE, user);
+
         return this.getLoginUserVO(user);
     }
 
@@ -159,14 +166,12 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     @Override
     public User getLoginUser(HttpServletRequest request) {
         // 先判断是否已登录
-        Object userObj = request.getSession().getAttribute(UserConstant.USER_LOGIN_STATE);
-        User currentUser = (User) userObj;
-        if (currentUser == null || currentUser.getId() == null) {
+        Object loginUserId = StpUtil.getLoginIdDefaultNull();
+        if (Objects.isNull(loginUserId)) {
             throw new BusinessException(ErrorCode.NOT_LOGIN_ERROR);
         }
         // 从数据库查询（追求性能的话可以注释，直接走缓存）
-        long userId = currentUser.getId();
-        currentUser = this.getById(userId);
+        User currentUser = this.getById((String) loginUserId);
         if (currentUser == null) {
             throw new BusinessException(ErrorCode.NOT_LOGIN_ERROR);
         }
@@ -182,14 +187,13 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     @Override
     public User getLoginUserPermitNull(HttpServletRequest request) {
         // 先判断是否已登录
-        Object userObj = request.getSession().getAttribute(UserConstant.USER_LOGIN_STATE);
-        User currentUser = (User) userObj;
-        if (currentUser == null || currentUser.getId() == null) {
+        Object loginUserId = StpUtil.getLoginIdDefaultNull();
+        if (Objects.isNull(loginUserId)) {
             return null;
         }
         // 从数据库查询（追求性能的话可以注释，直接走缓存）
-        long userId = currentUser.getId();
-        return this.getById(userId);
+//        long userId = currentUser.getId();
+        return this.getById((String) loginUserId);
     }
 
     /**
@@ -201,7 +205,8 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     @Override
     public boolean isAdmin(HttpServletRequest request) {
         // 仅管理员可查询
-        Object userObj = request.getSession().getAttribute(UserConstant.USER_LOGIN_STATE);
+//        Object userObj = request.getSession().getAttribute(UserConstant.USER_LOGIN_STATE);
+        Object userObj = StpUtil.getSession().get(UserConstant.USER_LOGIN_STATE);
         User user = (User) userObj;
         return isAdmin(user);
     }
@@ -218,11 +223,13 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
      */
     @Override
     public boolean userLogout(HttpServletRequest request) {
-        if (request.getSession().getAttribute(UserConstant.USER_LOGIN_STATE) == null) {
-            throw new BusinessException(ErrorCode.OPERATION_ERROR, "未登录");
-        }
+//        if (request.getSession().getAttribute(UserConstant.USER_LOGIN_STATE) == null) {
+//            throw new BusinessException(ErrorCode.OPERATION_ERROR, "未登录");
+//        }
+        StpUtil.checkLogin();
         // 移除登录态
-        request.getSession().removeAttribute(UserConstant.USER_LOGIN_STATE);
+        StpUtil.logout();
+//        request.getSession().removeAttribute(UserConstant.USER_LOGIN_STATE);
         return true;
     }
 
