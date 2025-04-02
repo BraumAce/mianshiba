@@ -69,9 +69,15 @@ create table if not exists question_bank_question
     UNIQUE (questionBankId, questionId)
 ) comment '题库题目' collate = utf8mb4_unicode_ci;
 
-# 数据表初始化
+# 数据表初始化-----------------------------------------------------------------------------------------------------------
 
--- 用户表
+-- 创建库
+CREATE DATABASE IF NOT EXISTS mianshiba_dev;
+
+-- 切换库
+USE mianshiba_dev;
+
+-- 用户信息表
 CREATE TABLE IF NOT EXISTS user_info
 (
     id          bigint AUTO_INCREMENT COMMENT '主键ID' PRIMARY KEY,
@@ -92,10 +98,12 @@ CREATE TABLE IF NOT EXISTS user_info
     UNIQUE KEY idx_username (username),
     INDEX idx_phone (phone),
     INDEX idx_email (email)
-) COMMENT '用户表' COLLATE = utf8mb4_unicode_ci;
+) ENGINE = InnoDB
+  DEFAULT CHARSET = utf8mb4
+  COLLATE = utf8mb4_unicode_ci COMMENT ='用户信息表';
 
--- 用户三方登录关联表
-CREATE TABLE IF NOT EXISTS user_third_auth
+-- 用户三方关联表
+CREATE TABLE IF NOT EXISTS user_third_mapping
 (
     id            bigint       NOT NULL AUTO_INCREMENT COMMENT '主键ID',
     user_id       bigint       NOT NULL COMMENT '用户ID',
@@ -224,33 +232,56 @@ CREATE TABLE IF NOT EXISTS post
   DEFAULT CHARSET = utf8mb4
   COLLATE = utf8mb4_unicode_ci COMMENT ='帖子表';
 
--- 评论表
-CREATE TABLE IF NOT EXISTS comment
+-- 用户点赞表
+CREATE TABLE IF NOT EXISTS user_like
 (
-    id              bigint   NOT NULL AUTO_INCREMENT COMMENT '主键ID',
-    comment_id      bigint   NOT NULL COMMENT '评论ID',
-    object_id       bigint   NOT NULL COMMENT '评论对象ID',
-    parent_id       bigint   NOT NULL DEFAULT 0 COMMENT '父评论ID(0表示一级评论)',
-    content         text     NOT NULL COMMENT '评论内容',
-    object_type     tinyint  NOT NULL DEFAULT 0 COMMENT '对象类型(0:帖子;1:题目)',
-    like_num        int      NOT NULL DEFAULT 0 COMMENT '点赞量',
-    create_operator bigint   NOT NULL COMMENT '创建者ID',
-    create_time     datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
-    is_delete       tinyint  NOT NULL DEFAULT 0 COMMENT '是否删除(0:否;1:是)',
+    id           bigint   NOT NULL AUTO_INCREMENT COMMENT '主键ID',
+    like_id      bigint   NOT NULL COMMENT '点赞ID',
+    user_id      bigint   NOT NULL COMMENT '用户ID',
+    content_id   bigint   NOT NULL COMMENT '内容ID',
+    content_type tinyint  NOT NULL COMMENT '内容类型(1:帖子;2:题目;3:评论等)',
+    like_status  tinyint  NOT NULL DEFAULT 1 COMMENT '点赞状态(1:已点赞;0:已取消)',
+    create_time  datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+    update_time  datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+    PRIMARY KEY (id),
+    UNIQUE KEY uk_like_id (like_id) COMMENT '点赞ID唯一索引',
+    UNIQUE KEY uk_user_content (user_id, content_id, content_type) COMMENT '用户内容唯一索引',
+    INDEX idx_content (content_id, content_type) COMMENT '内容索引',
+    INDEX idx_user (user_id) COMMENT '用户索引',
+    INDEX idx_like_status (like_status) COMMENT '点赞状态索引',
+    INDEX idx_create_time (create_time) COMMENT '创建时间索引',
+    INDEX idx_update_time (update_time) COMMENT '更新时间索引'
+) ENGINE = InnoDB
+  DEFAULT CHARSET = utf8mb4
+  COLLATE = utf8mb4_unicode_ci COMMENT ='用户点赞表';
+
+-- 用户评论表
+CREATE TABLE IF NOT EXISTS user_comment
+(
+    id          bigint   NOT NULL AUTO_INCREMENT COMMENT '主键ID',
+    comment_id  bigint   NOT NULL COMMENT '评论ID',
+    user_id     bigint   NOT NULL COMMENT '用户ID',
+    object_id   bigint   NOT NULL COMMENT '评论对象ID',
+    parent_id   bigint   NOT NULL DEFAULT 0 COMMENT '父评论ID(0表示一级评论)',
+    content     text     NOT NULL COMMENT '评论内容',
+    object_type tinyint  NOT NULL DEFAULT 0 COMMENT '对象类型(0:帖子;1:题目)',
+    like_num    int      NOT NULL DEFAULT 0 COMMENT '点赞量',
+    create_time datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+    is_delete   tinyint  NOT NULL DEFAULT 0 COMMENT '是否删除(0:否;1:是)',
     PRIMARY KEY (id),
     UNIQUE KEY uk_comment_id (comment_id),
+    INDEX idx_user_id (user_id) COMMENT '用户索引',
     INDEX idx_object (object_id, object_type) COMMENT '评论对象索引',
     INDEX idx_parent (parent_id) COMMENT '父评论索引',
-    INDEX idx_create_operator (create_operator) COMMENT '创建者索引',
     INDEX idx_create_time (create_time) COMMENT '创建时间索引',
     INDEX idx_is_delete (is_delete) COMMENT '删除状态索引',
     INDEX idx_like_num (like_num) COMMENT '点赞量索引'
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8mb4
-  COLLATE = utf8mb4_unicode_ci COMMENT ='评论表';
+  COLLATE = utf8mb4_unicode_ci COMMENT ='用户评论表';
 
--- 收藏表
-CREATE TABLE IF NOT EXISTS favorites
+-- 用户收藏表
+CREATE TABLE IF NOT EXISTS user_favorites
 (
     id              bigint       NOT NULL AUTO_INCREMENT COMMENT '主键ID',
     user_id         bigint       NOT NULL COMMENT '用户ID',
@@ -271,10 +302,10 @@ CREATE TABLE IF NOT EXISTS favorites
     INDEX idx_create_time (create_time) COMMENT '创建时间索引'
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8mb4
-  COLLATE = utf8mb4_unicode_ci COMMENT ='收藏表';
+  COLLATE = utf8mb4_unicode_ci COMMENT ='用户收藏表';
 
 -- 用户关注关联表
-CREATE TABLE IF NOT EXISTS user_follow
+CREATE TABLE IF NOT EXISTS user_follow_mapping
 (
     id          bigint   NOT NULL AUTO_INCREMENT COMMENT '主键ID',
     follower_id bigint   NOT NULL COMMENT '关注者ID',
@@ -285,8 +316,8 @@ CREATE TABLE IF NOT EXISTS user_follow
     INDEX idx_follower_id (follower_id) COMMENT '关注者索引',
     INDEX idx_followed_id (followed_id) COMMENT '被关注者索引',
     INDEX idx_create_time (create_time) COMMENT '关注时间索引',
-    CONSTRAINT fk_follower FOREIGN KEY (follower_id) REFERENCES user (user_id) ON DELETE CASCADE,
-    CONSTRAINT fk_followed FOREIGN KEY (followed_id) REFERENCES user (user_id) ON DELETE CASCADE
+    CONSTRAINT fk_follower FOREIGN KEY (follower_id) REFERENCES user_info (user_id) ON DELETE CASCADE,
+    CONSTRAINT fk_followed FOREIGN KEY (followed_id) REFERENCES user_info (user_id) ON DELETE CASCADE
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8mb4
   COLLATE = utf8mb4_unicode_ci COMMENT ='用户关注关联表';
@@ -297,7 +328,7 @@ CREATE TABLE IF NOT EXISTS user_behavior
     id              bigint       NOT NULL AUTO_INCREMENT COMMENT '主键ID',
     user_id         bigint       NOT NULL COMMENT '用户ID',
     content_id      bigint       NOT NULL COMMENT '关联内容ID',
-    behavior_type   int          NOT NULL COMMENT '行为类型(1:浏览;2:点赞;3:收藏;4:评论;5:分享等)',
+    behavior_type   int          NOT NULL COMMENT '行为类型(1:浏览;2:刷题;3:面试等)',
     behavior_detail json                  DEFAULT NULL COMMENT '行为详情(JSON格式)',
     device_info     varchar(256) NOT NULL COMMENT '设备信息',
     device_ip       int          NOT NULL COMMENT '设备IP(存储IP的整型值)',
