@@ -78,6 +78,7 @@ CREATE DATABASE IF NOT EXISTS mianshiba_dev;
 USE mianshiba_dev;
 
 -- 用户信息表
+DROP TABLE IF EXISTS user_info;
 CREATE TABLE IF NOT EXISTS user_info
 (
     id          bigint AUTO_INCREMENT COMMENT '主键ID' PRIMARY KEY,
@@ -95,35 +96,35 @@ CREATE TABLE IF NOT EXISTS user_info
     update_time datetime DEFAULT CURRENT_TIMESTAMP NOT NULL ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
     is_delete   tinyint  DEFAULT 0                 NOT NULL COMMENT '是否删除(0:否;1:是)',
     UNIQUE KEY idx_user_id (user_id),
-    UNIQUE KEY idx_username (username),
-    INDEX idx_phone (phone),
-    INDEX idx_email (email)
+    UNIQUE KEY idx_username (username)
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8mb4
   COLLATE = utf8mb4_unicode_ci COMMENT ='用户信息表';
 
 -- 用户三方关联表
+DROP TABLE IF EXISTS user_third_mapping;
 CREATE TABLE IF NOT EXISTS user_third_mapping
 (
     id            bigint       NOT NULL AUTO_INCREMENT COMMENT '主键ID',
     user_id       bigint       NOT NULL COMMENT '用户ID',
     open_id       varchar(256) NOT NULL COMMENT '平台OpenID',
-    platform      varchar(256) NOT NULL COMMENT '平台名称',
-    type          varchar(32)  NOT NULL COMMENT '平台类型',
+    platform_name varchar(256) NOT NULL COMMENT '平台名称',
+    platform_type varchar(32)  NOT NULL COMMENT '平台类型',
     identifier    varchar(256) DEFAULT NULL COMMENT '唯一标识',
     access_token  varchar(256) DEFAULT NULL COMMENT '访问令牌',
     refresh_token varchar(256) DEFAULT NULL COMMENT '刷新令牌',
     expires_in    int          DEFAULT NULL COMMENT '令牌有效期(秒)',
     PRIMARY KEY (id),
-    UNIQUE KEY idx_user_platform (user_id, platform, type),
+    UNIQUE KEY idx_user_platform (user_id, platform_name, platform_type),
     INDEX idx_open_id (open_id),
-    INDEX idx_platform (platform),
-    INDEX idx_type (type)
+    INDEX idx_platform (platform_name),
+    CONSTRAINT fk_user_third FOREIGN KEY (user_id) REFERENCES user_info (user_id) ON DELETE CASCADE
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8mb4
   COLLATE = utf8mb4_unicode_ci COMMENT ='第三方登录关联表';
 
 -- 题库表
+DROP TABLE IF EXISTS question_bank;
 CREATE TABLE IF NOT EXISTS question_bank
 (
     id              bigint       NOT NULL AUTO_INCREMENT COMMENT '主键ID',
@@ -139,16 +140,13 @@ CREATE TABLE IF NOT EXISTS question_bank
     update_time     datetime     NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
     is_delete       tinyint      NOT NULL DEFAULT 0 COMMENT '是否删除(0:否;1:是)',
     PRIMARY KEY (id),
-    UNIQUE KEY uk_bank_id (bank_id),
-    INDEX idx_type (type),
-    INDEX idx_priority (priority),
-    INDEX idx_create_operator (create_operator),
-    INDEX idx_is_delete (is_delete)
+    UNIQUE KEY uk_bank_id (bank_id)
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8mb4
   COLLATE = utf8mb4_unicode_ci COMMENT ='题库表';
 
 -- 题目表
+DROP TABLE IF EXISTS question;
 CREATE TABLE IF NOT EXISTS question
 (
     id              bigint       NOT NULL AUTO_INCREMENT COMMENT '主键ID',
@@ -167,19 +165,13 @@ CREATE TABLE IF NOT EXISTS question
     update_time     datetime     NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
     is_delete       tinyint      NOT NULL DEFAULT 0 COMMENT '是否删除(0:否;1:是)',
     PRIMARY KEY (id),
-    UNIQUE KEY uk_question_id (question_id),
-    FULLTEXT INDEX ft_title_content (title, content) COMMENT '全文索引',
-    INDEX idx_priority (priority),
-    INDEX idx_create_operator (create_operator),
-    INDEX idx_view_num (view_num),
-    INDEX idx_like_num (like_num),
-    INDEX idx_favorite_num (favorite_num),
-    INDEX idx_is_delete (is_delete)
+    UNIQUE KEY uk_question_id (question_id)
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8mb4
   COLLATE = utf8mb4_unicode_ci COMMENT ='题目表';
 
 -- 题库题目关联表
+DROP TABLE IF EXISTS question_bank_mapping;
 CREATE TABLE IF NOT EXISTS question_bank_mapping
 (
     id              bigint   NOT NULL AUTO_INCREMENT COMMENT '主键ID',
@@ -192,7 +184,6 @@ CREATE TABLE IF NOT EXISTS question_bank_mapping
     UNIQUE KEY uk_bank_question (bank_id, question_id) COMMENT '题库和题目唯一索引',
     INDEX idx_bank_id (bank_id),
     INDEX idx_question_id (question_id),
-    INDEX idx_question_order (question_order),
     CONSTRAINT fk_bank FOREIGN KEY (bank_id) REFERENCES question_bank (bank_id) ON DELETE CASCADE,
     CONSTRAINT fk_question FOREIGN KEY (question_id) REFERENCES question (question_id) ON DELETE CASCADE
 ) ENGINE = InnoDB
@@ -200,6 +191,7 @@ CREATE TABLE IF NOT EXISTS question_bank_mapping
   COLLATE = utf8mb4_unicode_ci COMMENT ='题库题目关联表';
 
 -- 帖子表
+DROP TABLE IF EXISTS post;
 CREATE TABLE IF NOT EXISTS post
 (
     id              bigint       NOT NULL AUTO_INCREMENT COMMENT '主键ID',
@@ -219,20 +211,13 @@ CREATE TABLE IF NOT EXISTS post
     PRIMARY KEY (id),
     UNIQUE KEY uk_post_id (post_id),
     FULLTEXT INDEX ft_title_content (title, content) COMMENT '全文索引',
-    INDEX idx_priority (priority),
-    INDEX idx_status (status),
-    INDEX idx_create_operator (create_operator),
-    INDEX idx_view_num (view_num),
-    INDEX idx_like_num (like_num),
-    INDEX idx_favorite_num (favorite_num),
-    INDEX idx_comment_num (comment_num),
-    INDEX idx_is_delete (is_delete),
-    INDEX idx_create_time (create_time)
+    CONSTRAINT fk_user_post FOREIGN KEY (create_operator) REFERENCES user_info (user_id) ON DELETE CASCADE
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8mb4
   COLLATE = utf8mb4_unicode_ci COMMENT ='帖子表';
 
 -- 用户点赞表
+DROP TABLE IF EXISTS user_like;
 CREATE TABLE IF NOT EXISTS user_like
 (
     id           bigint   NOT NULL AUTO_INCREMENT COMMENT '主键ID',
@@ -248,14 +233,13 @@ CREATE TABLE IF NOT EXISTS user_like
     UNIQUE KEY uk_user_content (user_id, content_id, content_type) COMMENT '用户内容唯一索引',
     INDEX idx_content (content_id, content_type) COMMENT '内容索引',
     INDEX idx_user (user_id) COMMENT '用户索引',
-    INDEX idx_like_status (like_status) COMMENT '点赞状态索引',
-    INDEX idx_create_time (create_time) COMMENT '创建时间索引',
-    INDEX idx_update_time (update_time) COMMENT '更新时间索引'
+    CONSTRAINT fk_user_like FOREIGN KEY (user_id) REFERENCES user_info (user_id) ON DELETE CASCADE
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8mb4
   COLLATE = utf8mb4_unicode_ci COMMENT ='用户点赞表';
 
 -- 用户评论表
+DROP TABLE IF EXISTS user_comment;
 CREATE TABLE IF NOT EXISTS user_comment
 (
     id          bigint   NOT NULL AUTO_INCREMENT COMMENT '主键ID',
@@ -272,15 +256,13 @@ CREATE TABLE IF NOT EXISTS user_comment
     UNIQUE KEY uk_comment_id (comment_id),
     INDEX idx_user_id (user_id) COMMENT '用户索引',
     INDEX idx_object (object_id, object_type) COMMENT '评论对象索引',
-    INDEX idx_parent (parent_id) COMMENT '父评论索引',
-    INDEX idx_create_time (create_time) COMMENT '创建时间索引',
-    INDEX idx_is_delete (is_delete) COMMENT '删除状态索引',
-    INDEX idx_like_num (like_num) COMMENT '点赞量索引'
+    CONSTRAINT fk_user_comment FOREIGN KEY (user_id) REFERENCES user_info (user_id) ON DELETE CASCADE
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8mb4
   COLLATE = utf8mb4_unicode_ci COMMENT ='用户评论表';
 
 -- 用户收藏表
+DROP TABLE IF EXISTS user_favorites;
 CREATE TABLE IF NOT EXISTS user_favorites
 (
     id              bigint       NOT NULL AUTO_INCREMENT COMMENT '主键ID',
@@ -296,15 +278,13 @@ CREATE TABLE IF NOT EXISTS user_favorites
     PRIMARY KEY (id),
     UNIQUE KEY uk_favorites_id (favorites_id) COMMENT '收藏夹唯一标识',
     INDEX idx_user_id (user_id) COMMENT '用户索引',
-    INDEX idx_type (type) COMMENT '内容类型索引',
-    INDEX idx_priority (priority) COMMENT '优先级索引',
-    INDEX idx_is_delete (is_delete) COMMENT '删除状态索引',
-    INDEX idx_create_time (create_time) COMMENT '创建时间索引'
+    CONSTRAINT fk_user_favorites FOREIGN KEY (user_id) REFERENCES user_info (user_id) ON DELETE CASCADE
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8mb4
   COLLATE = utf8mb4_unicode_ci COMMENT ='用户收藏表';
 
 -- 用户关注关联表
+DROP TABLE IF EXISTS user_follow_mapping;
 CREATE TABLE IF NOT EXISTS user_follow_mapping
 (
     id          bigint   NOT NULL AUTO_INCREMENT COMMENT '主键ID',
@@ -315,7 +295,6 @@ CREATE TABLE IF NOT EXISTS user_follow_mapping
     UNIQUE KEY uk_follow_relation (follower_id, followed_id) COMMENT '关注关系唯一索引',
     INDEX idx_follower_id (follower_id) COMMENT '关注者索引',
     INDEX idx_followed_id (followed_id) COMMENT '被关注者索引',
-    INDEX idx_create_time (create_time) COMMENT '关注时间索引',
     CONSTRAINT fk_follower FOREIGN KEY (follower_id) REFERENCES user_info (user_id) ON DELETE CASCADE,
     CONSTRAINT fk_followed FOREIGN KEY (followed_id) REFERENCES user_info (user_id) ON DELETE CASCADE
 ) ENGINE = InnoDB
@@ -323,7 +302,8 @@ CREATE TABLE IF NOT EXISTS user_follow_mapping
   COLLATE = utf8mb4_unicode_ci COMMENT ='用户关注关联表';
 
 -- 用户行为记录表
-CREATE TABLE IF NOT EXISTS user_behavior
+DROP TABLE IF EXISTS user_behavior_log;
+CREATE TABLE IF NOT EXISTS user_behavior_log
 (
     id              bigint       NOT NULL AUTO_INCREMENT COMMENT '主键ID',
     user_id         bigint       NOT NULL COMMENT '用户ID',
@@ -335,11 +315,7 @@ CREATE TABLE IF NOT EXISTS user_behavior
     create_time     datetime     NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
     PRIMARY KEY (id),
     INDEX idx_user_id (user_id) COMMENT '用户索引',
-    INDEX idx_content_id (content_id) COMMENT '内容索引',
-    INDEX idx_behavior_type (behavior_type) COMMENT '行为类型索引',
-    INDEX idx_create_time (create_time) COMMENT '时间索引',
-    INDEX idx_user_behavior (user_id, behavior_type) COMMENT '用户行为组合索引',
-    INDEX idx_content_behavior (content_id, behavior_type) COMMENT '内容行为组合索引'
+    CONSTRAINT fk_user_behavior_log FOREIGN KEY (user_id) REFERENCES user_info (user_id) ON DELETE CASCADE
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8mb4
   COLLATE = utf8mb4_unicode_ci COMMENT ='用户行为记录表';
