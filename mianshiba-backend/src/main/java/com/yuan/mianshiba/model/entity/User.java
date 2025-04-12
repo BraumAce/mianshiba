@@ -12,7 +12,7 @@ import java.util.Date;
  * @author BraumAce
  * @TableName user
  */
-@TableName(value ="user")
+@TableName(value = "user")
 @Data
 public class User implements Serializable {
     /**

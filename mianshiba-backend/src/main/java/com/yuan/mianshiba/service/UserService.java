@@ -20,6 +20,14 @@ import me.chanjar.weixin.common.bean.WxOAuth2UserInfo;
 public interface UserService extends IService<User> {
 
     /**
+     * 根据OIDC身份标识符获取用户
+     *
+     * @param oidcSub OIDC身份标识符
+     * @return 用户对象
+     */
+    User getUserByOidcSub(String oidcSub);
+
+    /**
      * 用户注册
      *
      * @param userAccount   用户账户

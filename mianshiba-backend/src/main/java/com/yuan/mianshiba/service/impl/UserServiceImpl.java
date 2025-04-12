@@ -2,6 +2,7 @@ package com.yuan.mianshiba.service.impl;
 
 import cn.dev33.satoken.stp.StpUtil;
 import cn.hutool.core.collection.CollUtil;
+import cn.hutool.core.util.URLUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.yuan.mianshiba.common.ErrorCode;
@@ -24,16 +25,18 @@ import org.apache.commons.lang3.StringUtils;
 import org.redisson.api.RBitSet;
 import org.redisson.api.RedissonClient;
 import org.springframework.beans.BeanUtils;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.util.DigestUtils;
+import org.springframework.web.client.RestClientException;
+import org.springframework.web.client.RestTemplate;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.BitSet;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 /**
@@ -44,6 +47,13 @@ import java.util.stream.Collectors;
 @Service
 @Slf4j
 public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements UserService {
+
+    @Override
+    public User getUserByOidcSub(String oidcSub) {
+        QueryWrapper<User> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("oidc_sub", oidcSub);
+        return getOne(queryWrapper);
+    }
 
     /**
      * 盐值，混淆密码
@@ -116,7 +126,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
             throw new BusinessException(ErrorCode.PARAMS_ERROR, "用户不存在或密码错误");
         }
         // 3. 记录用户的登录态
-//        request.getSession().setAttribute(UserConstant.USER_LOGIN_STATE, user);
+        // request.getSession().setAttribute(UserConstant.USER_LOGIN_STATE, user);
         // 使用 sa-token 登录，判断设备实现同端登录互斥
         StpUtil.login(user.getId(), DeviceUtils.getRequestDevice(request));
         String deviceType = StpUtil.getLoginDeviceType();
@@ -192,7 +202,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
             return null;
         }
         // 从数据库查询（追求性能的话可以注释，直接走缓存）
-//        long userId = currentUser.getId();
+        // long userId = currentUser.getId();
         return this.getById((String) loginUserId);
     }
 
@@ -205,7 +215,8 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     @Override
     public boolean isAdmin(HttpServletRequest request) {
         // 仅管理员可查询
-//        Object userObj = request.getSession().getAttribute(UserConstant.USER_LOGIN_STATE);
+        // Object userObj =
+        // request.getSession().getAttribute(UserConstant.USER_LOGIN_STATE);
         Object userObj = StpUtil.getSession().get(UserConstant.USER_LOGIN_STATE);
         User user = (User) userObj;
         return isAdmin(user);
@@ -223,13 +234,33 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
      */
     @Override
     public boolean userLogout(HttpServletRequest request) {
-//        if (request.getSession().getAttribute(UserConstant.USER_LOGIN_STATE) == null) {
-//            throw new BusinessException(ErrorCode.OPERATION_ERROR, "未登录");
-//        }
+        // if (request.getSession().getAttribute(UserConstant.USER_LOGIN_STATE) == null)
+        // {
+        // throw new BusinessException(ErrorCode.OPERATION_ERROR, "未登录");
+        // }
         StpUtil.checkLogin();
         // 移除登录态
         StpUtil.logout();
-//        request.getSession().removeAttribute(UserConstant.USER_LOGIN_STATE);
+        // 如果是三方登录用户
+        Map<String, Object> params = new ConcurrentHashMap<>();
+        params.put("redirect_uri", "http://localhost:3000");
+        String logoutUrl = "https://mianshiba.authing.cn/oidc/session/end" + "?" + URLUtil.buildQuery(params, StandardCharsets.UTF_8);
+        if (StringUtils.isNotBlank(logoutUrl)) {
+            try {
+                // 跳转到第三方登出接口
+                RestTemplate restTemplate = new RestTemplate();
+                ResponseEntity<String> responseEntity = restTemplate.getForEntity(logoutUrl, String.class);
+                if (responseEntity.getStatusCode().is2xxSuccessful()) {
+                    log.info("用户退出成功");
+                } else {
+                    log.error("用户退出失败，状态码：{}，响应内容：{}", responseEntity.getStatusCodeValue(), responseEntity.getBody());
+                }
+            } catch (RestClientException e) {
+                throw new RuntimeException(e);
+            }
+        }
+
+        // request.getSession().removeAttribute(UserConstant.USER_LOGIN_STATE);
         return true;
     }
 
