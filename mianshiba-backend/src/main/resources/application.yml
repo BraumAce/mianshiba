@@ -117,6 +117,14 @@ spring:
       # 大小限制
       max-file-size: 10MB
 
+sso:
+  client:
+    authing:
+      client-id: 67ea40e3d79c8cb45cc9a66a
+      client-secret: 96bf0c7262c9bf455d981bfbac0f5642
+      redirect_uri: http://localhost:8101/api/sso/callback
+      issuer-uri: https://mianshiba.authing.cn/oidc
+
 mybatis-plus:
   configuration:
     map-underscore-to-camel-case: false

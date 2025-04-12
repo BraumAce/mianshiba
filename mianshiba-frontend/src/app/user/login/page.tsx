@@ -4,7 +4,7 @@ import React from "react";
 import { LoginForm, ProForm, ProFormText } from "@ant-design/pro-components";
 import { message } from "antd";
 import { LockOutlined, UserOutlined } from "@ant-design/icons";
-import { userLoginUsingPost } from "@/api/userController";
+import { userLoginUsingPost, ssoLoginUsingGet } from "@/api/userController";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
@@ -85,6 +85,31 @@ const UserLoginPage: React.FC = (props) => {
             },
           ]}
         />
+        <div
+          style={{
+            marginBlockEnd: 12,
+            textAlign: "center",
+          }}
+        >
+          <a
+            onClick={async () => {
+              try {
+                const res = await ssoLoginUsingGet();
+                if (res.data) {
+                  window.location.href = res.data;
+                }
+              } catch (e: any) {
+                message.error('SSO登录失败，' + e.message);
+              }
+            }}
+            style={{
+              cursor: 'pointer',
+              color: '#1677ff'
+            }}
+          >
+            使用SSO登录
+          </a>
+        </div>
         <div
           style={{
             marginBlockEnd: 24,

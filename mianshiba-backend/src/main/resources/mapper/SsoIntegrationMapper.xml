@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yuan.mianshiba.mapper.SsoIntegrationMapper">
+
+    <resultMap id="BaseResultMap" type="com.yuan.mianshiba.model.entity.SsoIntegration">
+            <id property="id" column="id" />
+            <result property="protocol" column="protocol" />
+            <result property="clientName" column="client_name" />
+            <result property="grantType" column="grant_type" />
+            <result property="metadata" column="metadata" />
+            <result property="isEnabled" column="is_enabled" />
+            <result property="description" column="description" />
+            <result property="isDelete" column="is_delete" />
+            <result property="gmtCreate" column="gmt_create" />
+            <result property="createOperator" column="create_operator" />
+            <result property="gmtUpdate" column="gmt_update" />
+            <result property="updateOperator" column="update_operator" />
+            <result property="gmtDelete" column="gmt_delete" />
+            <result property="deleteOperator" column="delete_operator" />
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id,protocol,client_name,grant_type,metadata,is_enabled,
+        description,is_delete,gmt_create,create_operator,gmt_update,
+        update_operator,gmt_delete,delete_operator
+    </sql>
+</mapper>

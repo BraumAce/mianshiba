@@ -68,3 +68,29 @@ create table if not exists question_bank_question
     updateTime     datetime default CURRENT_TIMESTAMP not null on update CURRENT_TIMESTAMP comment '更新时间',
     UNIQUE (questionBankId, questionId)
 ) comment '题库题目' collate = utf8mb4_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS `ws_sso_integration`
+(
+    `id`          bigint                 NOT NULL AUTO_INCREMENT COMMENT 'id',
+    `protocol`    varchar(32)            NOT NULL COMMENT '协议类型',
+    `clientId`    varchar(32)            NOT NULL COMMENT '客户端id',
+    `clientName`  varchar(32)            NOT NULL COMMENT '客户端名称',
+    `grantType`   varchar(32)            NOT NULL COMMENT '授权模式',
+    `metadata`    json                   NOT NULL COMMENT '协议配置（端点信息）',
+    `isEnabled`   tinyint(1) DEFAULT '1' NOT NULL COMMENT '是否启用',
+    `description` text       DEFAULT NULL COMMENT '集成描述',
+    `isDelete`    tinyint    DEFAULT '0' NOT NULL COMMENT '是否删除',
+    PRIMARY KEY (`id`)
+) ENGINE = InnoDB
+  DEFAULT CHARSET = utf8mb4 COMMENT ='SSO集成配置表';
+
+CREATE TABLE IF NOT EXISTS `ws_user_sso`
+(
+    `id`        bigint              NOT NULL AUTO_INCREMENT COMMENT 'id',
+    `userId`    bigint              NOT NULL COMMENT '用户id',
+    `ssoId`     bigint              NOT NULL COMMENT 'sso记录id',
+    `tokenInfo` json                NOT NULL COMMENT 'token信息',
+    `isDelete`  tinyint DEFAULT '0' NOT NULL COMMENT '是否删除',
+    PRIMARY KEY (`id`)
+) ENGINE = InnoDB
+  DEFAULT CHARSET = utf8mb4 COMMENT ='用户SSO关联表';

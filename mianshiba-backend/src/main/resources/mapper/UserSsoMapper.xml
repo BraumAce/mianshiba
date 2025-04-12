@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yuan.mianshiba.mapper.UserSsoMapper">
+
+    <resultMap id="BaseResultMap" type="com.yuan.mianshiba.model.entity.UserSso">
+            <id property="id" column="id" />
+            <result property="userId" column="user_id" />
+            <result property="ssoId" column="sso_id" />
+            <result property="tokenInfo" column="token_info" />
+            <result property="tenantId" column="tenant_id" />
+            <result property="workspaceId" column="workspace_id" />
+            <result property="isDelete" column="is_delete" />
+            <result property="gmtCreate" column="gmt_create" />
+            <result property="createOperator" column="create_operator" />
+            <result property="gmtUpdate" column="gmt_update" />
+            <result property="updateOperator" column="update_operator" />
+            <result property="gmtDelete" column="gmt_delete" />
+            <result property="deleteOperator" column="delete_operator" />
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id,user_id,sso_id,token_info,tenant_id,workspace_id,
+        is_delete,gmt_create,create_operator,gmt_update,update_operator,
+        gmt_delete,delete_operator
+    </sql>
+</mapper>

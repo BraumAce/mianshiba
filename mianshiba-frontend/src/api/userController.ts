@@ -176,6 +176,14 @@ export async function userRegisterUsingPost(
   });
 }
 
+/** ssoLogin GET /api/user/ssoLogin */
+export async function ssoLoginUsingGet(options?: { [key: string]: any }) {
+  return request<API.RedirectView>("/api/user/ssoLogin", {
+    method: "GET",
+    ...(options || {}),
+  });
+}
+
 /** updateUser POST /api/user/update */
 export async function updateUserUsingPost(
   body: API.UserUpdateRequest,

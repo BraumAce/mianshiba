@@ -1,6 +1,7 @@
 package com.yuan.mianshiba.controller;
 
 import cn.dev33.satoken.annotation.SaCheckRole;
+import cn.hutool.core.util.IdUtil;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.yuan.mianshiba.common.BaseResponse;
 import com.yuan.mianshiba.common.DeleteRequest;
@@ -14,6 +15,7 @@ import com.yuan.mianshiba.model.dto.user.*;
 import com.yuan.mianshiba.model.entity.User;
 import com.yuan.mianshiba.model.vo.LoginUserVO;
 import com.yuan.mianshiba.model.vo.UserVO;
+import com.yuan.mianshiba.service.SsoIntegrationService;
 import com.yuan.mianshiba.service.UserService;
 import lombok.extern.slf4j.Slf4j;
 import me.chanjar.weixin.common.bean.WxOAuth2UserInfo;
@@ -23,6 +25,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.util.DigestUtils;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.view.RedirectView;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
@@ -46,6 +49,9 @@ public class UserController {
 
     @Resource
     private WxOpenConfig wxOpenConfig;
+
+    @Resource
+    private SsoIntegrationService ssoIntegrationService;
 
     // region 登录相关
 
@@ -89,6 +95,14 @@ public class UserController {
         }
         LoginUserVO loginUserVO = userService.userLogin(userAccount, userPassword, request);
         return ResultUtils.success(loginUserVO);
+    }
+
+    // SSO登录
+    @GetMapping("/ssoLogin")
+    public RedirectView ssoLogin() {
+        String state = IdUtil.simpleUUID();
+        String authUrl = ssoIntegrationService.getAuthorizationUrl(state);
+        return new RedirectView(authUrl);
     }
 
     /**

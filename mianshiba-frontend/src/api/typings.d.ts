@@ -1,4 +1,22 @@
 declare namespace API {
+  type Annotation = true;
+
+  type ApplicationContext = {
+    applicationName?: string;
+    autowireCapableBeanFactory?: AutowireCapableBeanFactory;
+    beanDefinitionCount?: number;
+    beanDefinitionNames?: string[];
+    classLoader?: ClassLoader;
+    displayName?: string;
+    environment?: Environment;
+    id?: string;
+    parent?: ApplicationContext;
+    parentBeanFactory?: BeanFactory;
+    startupDate?: number;
+  };
+
+  type AutowireCapableBeanFactory = true;
+
   type BaseResponseBoolean_ = {
     code?: number;
     data?: boolean;
@@ -131,28 +149,41 @@ declare namespace API {
     message?: string;
   };
 
+  type BeanFactory = true;
+
+  type callbackUsingGETParams = {
+    code: string;
+  };
+
   type checkUsingGETParams = {
-    /** echostr */
     echostr?: string;
-    /** nonce */
     nonce?: string;
-    /** signature */
     signature?: string;
-    /** timestamp */
     timestamp?: string;
+  };
+
+  type ClassLoader = {
+    definedPackages?: Package[];
+    name?: string;
+    parent?: ClassLoader;
+    registeredAsParallelCapable?: boolean;
+    unnamedModule?: Module;
   };
 
   type DeleteRequest = {
     id?: number;
   };
 
+  type Environment = {
+    activeProfiles?: string[];
+    defaultProfiles?: string[];
+  };
+
   type getPostVOByIdUsingGETParams = {
-    /** id */
     id?: number;
   };
 
   type getQuestionBankQuestionVOByIdUsingGETParams = {
-    /** id */
     id?: number;
   };
 
@@ -172,22 +203,18 @@ declare namespace API {
   };
 
   type getQuestionVOByIdUsingGETParams = {
-    /** id */
     id?: number;
   };
 
   type getUserByIdUsingGETParams = {
-    /** id */
     id?: number;
   };
 
   type getUserSignInRecordUsingGETParams = {
-    /** year */
     year?: number;
   };
 
   type getUserVOByIdUsingGETParams = {
-    /** id */
     id?: number;
   };
 
@@ -201,9 +228,44 @@ declare namespace API {
     userRole?: string;
   };
 
+  type logoutUsingGETParams = {
+    idToken: string;
+  };
+
+  type Module = {
+    annotations?: Annotation[];
+    classLoader?: ClassLoader;
+    declaredAnnotations?: Annotation[];
+    descriptor?: ModuleDescriptor;
+    layer?: ModuleLayer;
+    name?: string;
+    named?: boolean;
+    packages?: string[];
+  };
+
+  type ModuleDescriptor = {
+    automatic?: boolean;
+    open?: boolean;
+  };
+
+  type ModuleLayer = true;
+
   type OrderItem = {
     asc?: boolean;
     column?: string;
+  };
+
+  type Package = {
+    annotations?: Annotation[];
+    declaredAnnotations?: Annotation[];
+    implementationTitle?: string;
+    implementationVendor?: string;
+    implementationVersion?: string;
+    name?: string;
+    sealed?: boolean;
+    specificationTitle?: string;
+    specificationVendor?: string;
+    specificationVersion?: string;
   };
 
   type PagePost_ = {
@@ -601,6 +663,20 @@ declare namespace API {
     userId?: number;
   };
 
+  type RedirectView = {
+    applicationContext?: ApplicationContext;
+    attributesMap?: Record<string, any>;
+    beanName?: string;
+    contentType?: string;
+    exposePathVariables?: boolean;
+    hosts?: string[];
+    propagateQueryProperties?: boolean;
+    redirectView?: boolean;
+    requestContextAttribute?: string;
+    staticAttributes?: Record<string, any>;
+    url?: string;
+  };
+
   type uploadFileUsingPOSTParams = {
     biz?: string;
   };
@@ -629,7 +705,6 @@ declare namespace API {
   };
 
   type userLoginByWxOpenUsingGETParams = {
-    /** code */
     code: string;
   };
 
