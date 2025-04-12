@@ -18,10 +18,12 @@ import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
 /**
- * 权限校验 AOP
+ * 权限校验 AOP <br>
+ * 已弃用，改为使用 sa-token 校验权限
  *
  * @author BraumAce
  */
+@Deprecated
 //@Aspect
 //@Component
 public class AuthInterceptor {
