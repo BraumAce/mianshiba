@@ -4,7 +4,7 @@ import {
   removeQuestionBankQuestionUsingPost
 } from "@/api/questionBankQuestionController";
 import { Form, message, Modal, Select } from 'antd';
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { listQuestionBankVoByPageUsingPost } from "@/api/questionBankController";
 
 interface Props {
@@ -25,18 +25,18 @@ const UpdateBankModal: React.FC<Props> = (props) => {
   const [questionBankList, setQuestionBankList] = useState<API.QuestionBankVO[]>([]);
 
   // 获取所属题库列表
-  const getCurrentQuestionBankIdList = async () => {
+  const getCurrentQuestionBankIdList = useCallback(async () => {
     try {
       const res = await listQuestionBankQuestionVoByPageUsingPost({
         questionId,
         pageSize: 20,
       })
       const list = (res.data?.records ?? []).map(item => item.questionBankId);
-      form.setFieldValue("questionBankIdList" as any, list);
+      form.setFieldValue("questionBankIdList", list);
     } catch (e: any) {
       messageApi.error("获取题目所属题库列表失败：" + e.message);
     }
-  }
+  }, [questionId, form, messageApi]);
 
   useEffect(() => {
     if (questionId) {
@@ -75,11 +75,11 @@ const UpdateBankModal: React.FC<Props> = (props) => {
       }}
     >
       {contextHolder}
-      <Form form={form} style={{ marginTop: 24 }}>
+      <Form form={form} style={{marginTop: 24}}>
         <Form.Item label="所属题库" name="questionBankIdList">
           <Select
             mode="multiple"
-            style={{ width: "100%" }}
+            style={{width: "100%"}}
             options={
               questionBankList.map(questionBank => {
                 return {

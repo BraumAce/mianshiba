@@ -127,7 +127,7 @@ const QuestionBankAdminPage: React.FC = () => {
       <ProTable<API.QuestionBank>
         headerTitle={'查询表格'}
         actionRef={actionRef}
-        rowKey="key"
+        rowKey="id"
         search={{
           labelWidth: 120,
         }}
