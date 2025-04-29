@@ -5,12 +5,12 @@ import { userLoginUsingPost } from '@/api/userController';
 import { AppDispatch } from '@/stores';
 import { setLoginUser } from '@/stores/loginUser';
 import {
-  AlipayOutlined,
+  QqOutlined,
   LockOutlined,
   MobileOutlined,
-  TaobaoOutlined,
+  GithubOutlined,
   UserOutlined,
-  WeiboOutlined,
+  GoogleOutlined,
 } from '@ant-design/icons';
 import {
   LoginFormPage,
@@ -45,8 +45,7 @@ const LoginPage: React.FC = (props) => {
   const [loginType, setLoginType] = useState<LoginType>('phone');
   const [form] = ProForm.useForm();
   const { token } = theme.useToken();
-  // const { message } = App.useApp();
-  const [messageApi] = message.useMessage();
+  const { message } = App.useApp();
   const router = useRouter();
   const dispatch = useDispatch<AppDispatch>();
   const items = [
@@ -127,7 +126,7 @@ const LoginPage: React.FC = (props) => {
                   borderRadius: '50%',
                 }}
               >
-                <AlipayOutlined style={{ ...iconStyles, color: '#1677FF' }} />
+                <QqOutlined style={{ ...iconStyles, color: '#1677FF' }} />
               </div>
               <div
                 style={{
@@ -141,7 +140,7 @@ const LoginPage: React.FC = (props) => {
                   borderRadius: '50%',
                 }}
               >
-                <TaobaoOutlined style={{ ...iconStyles, color: '#FF6A10' }} />
+                <GithubOutlined style={{ ...iconStyles, color: '#1677FF' }} />
               </div>
               <div
                 style={{
@@ -155,7 +154,7 @@ const LoginPage: React.FC = (props) => {
                   borderRadius: '50%',
                 }}
               >
-                <WeiboOutlined style={{ ...iconStyles, color: '#1890ff' }} />
+                <GoogleOutlined style={{ ...iconStyles, color: '#1677FF' }} />
               </div>
             </Space>
           </div>
@@ -243,7 +242,7 @@ const LoginPage: React.FC = (props) => {
                 },
               ]}
               onGetCaptcha={async () => {
-                message.success("获取验证码成功！验证码为：1234");
+                message.success("验证码发送成功！");
               }}
             />
           </>
