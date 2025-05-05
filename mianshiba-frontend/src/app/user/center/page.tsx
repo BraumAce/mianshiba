@@ -1,6 +1,6 @@
 "use client";
 
-import { Avatar, Card, Col, Row } from "antd";
+import { Avatar, Card, Col, Row, Segmented, Tag } from "antd";
 import Meta from "antd/es/card/Meta";
 import Paragraph from "antd/es/typography/Paragraph";
 import Title from "antd/es/typography/Title";
@@ -9,6 +9,10 @@ import { RootState } from "@/stores";
 import { useState } from "react";
 import "./index.css";
 import CalendarChart from "./components/CalendarChart";
+import UserInfo from "@/app/user/center/components/UserInfo";
+import UserInfoEditForm from "@/app/user/center/components/UserInfoEditForm";
+import { USER_ROLE_ENUM, USER_ROLE_TEXT_MAP } from "@/constants/user";
+import dayjs from "dayjs";
 
 /**
  * 用户中心页面
@@ -19,7 +23,8 @@ export default function UserCenterPage() {
     // 便于复用，新起一个变量
     const user = loginUser;
     // 控制菜单栏 Tab
-    const [activeTabKey, setActiveTabKey] = useState<string>("record");
+    const [activeTabKey, setActiveTabKey] = useState<string>("info");
+    const [currentEditState, setCurrentEditState] = useState<string>("查看信息");
 
     return (
         <div id="userCenterPage" className="max-width-content">
@@ -40,11 +45,28 @@ export default function UserCenterPage() {
                                 </>
                             }
                         />
+                        <Tag
+                            color={user.userRole === USER_ROLE_ENUM.ADMIN ? "gold" : "grey"}
+                        >
+                            {USER_ROLE_TEXT_MAP[user.userRole]}
+                        </Tag>
+                        <Paragraph type="secondary" style={{ marginTop: 8 }}>
+                            注册日期：{dayjs(user.createTime).format("YYYY-MM-DD")}
+                        </Paragraph>
+                        <Paragraph type="secondary" style={{ marginTop: 8 }} copyable={{
+                            text: user.id
+                        }}>
+                            我的 id：{user.id}
+                        </Paragraph>
                     </Card>
                 </Col>
                 <Col xs={24} md={18}>
                     <Card
                         tabList={[
+                            {
+                                key: "info",
+                                label: "我的信息",
+                            },
                             {
                                 key: "record",
                                 label: "刷题记录",
@@ -59,6 +81,19 @@ export default function UserCenterPage() {
                             setActiveTabKey(key);
                         }}
                     >
+                        {activeTabKey === "info" && (
+                            <>
+                                <Segmented<string>
+                                    options={["查看信息", "修改信息"]}
+                                    value={currentEditState}
+                                    onChange={setCurrentEditState}
+                                />
+                                {currentEditState === "查看信息" && <UserInfo user={user} />}
+                                {currentEditState === "修改信息" && (
+                                    <UserInfoEditForm user={user} />
+                                )}
+                            </>
+                        )}
                         {activeTabKey === "record" && (
                             <>
                                 <CalendarChart />

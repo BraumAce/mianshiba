@@ -66,6 +66,7 @@ export default function QuestionTable(props: Props) {
   return (
     <div className="question-table">
       <ProTable
+        rowKey="id"
         actionRef={actionRef}
         columns={columns}
         size="large"
