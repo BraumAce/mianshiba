@@ -17,9 +17,8 @@ export const menus: MenuDataItem[] = [
     name: "题目",
   },
   {
-    name: "面试吧",
-    path: "https://mianshiba.com",
-    target: "_blank",
+    path: "/mockInterview/add",
+    name: "模拟面试",
   },
   {
     path: "/admin",

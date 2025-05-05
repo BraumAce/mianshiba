@@ -4,6 +4,7 @@
 // API 唯一标识：
 import * as wxMpController from "./wxMpController";
 import * as fileController from "./fileController";
+import * as mockInterviewController from "./mockInterviewController";
 import * as restAuthController from "./restAuthController";
 import * as postController from "./postController";
 import * as postFavourController from "./postFavourController";
@@ -15,6 +16,7 @@ import * as userController from "./userController";
 export default {
   wxMpController,
   fileController,
+  mockInterviewController,
   restAuthController,
   postController,
   postFavourController,
