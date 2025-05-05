@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.yuan.mianshiba.model.dto.question.QuestionQueryRequest;
 import com.yuan.mianshiba.model.entity.Question;
+import com.yuan.mianshiba.model.entity.User;
 import com.yuan.mianshiba.model.vo.QuestionVO;
 
 import javax.servlet.http.HttpServletRequest;
@@ -73,4 +74,13 @@ public interface QuestionService extends IService<Question> {
      * @param questionIdList
      */
     void batchDeleteQuestions(List<Long> questionIdList);
+
+    /**
+     * AI 生成题目
+     * @param questionType 题目类型，比如 Java
+     * @param number 题目数量，比如 10
+     * @param user 创建人
+     * @return ture / false
+     */
+    boolean aiGenerateQuestions(String questionType, int number, User user);
 }

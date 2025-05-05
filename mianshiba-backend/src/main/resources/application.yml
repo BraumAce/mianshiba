@@ -109,8 +109,8 @@ spring:
   # Elasticsearch 配置
   elasticsearch:
     uris: http://localhost:9200
-#    username: root
-#    password: 123456
+  #    username: root
+  #    password: 123456
   # 文件上传
   servlet:
     multipart:
@@ -206,3 +206,7 @@ knife4j:
         api-rule: package
         api-rule-resources:
           - com.yuan.mianshiba.controller
+
+# AI 大模型接入（目前是火山引擎 DeepSeek）
+ai:
+  apiKey: 填写自己的 API Key
