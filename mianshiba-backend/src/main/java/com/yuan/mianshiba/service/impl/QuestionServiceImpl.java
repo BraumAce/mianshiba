@@ -391,7 +391,7 @@ public class QuestionServiceImpl extends ServiceImpl<QuestionMapper, Question> i
             question.setTags("[\"待审核\"]");
             // 优化点：可以并发生成
             question.setAnswer(aiGenerateQuestionAnswer(title));
-            log.info("生成题目：{}", question);
+            log.info("生成题目：{}", question.getTitle());
             return question;
         }).collect(Collectors.toList());
         boolean result = this.saveBatch(questionList);
