@@ -68,13 +68,21 @@ export default function UserCenterPage() {
                                 label: "我的信息",
                             },
                             {
+                                key: "collection",
+                                label: "我的收藏",
+                            },
+                            {
                                 key: "record",
                                 label: "刷题记录",
                             },
                             {
-                                key: "others",
-                                label: "其他",
+                                key: "mockInterview",
+                                label: "面试记录",
                             },
+                            // {
+                            //     key: "others",
+                            //     label: "其他",
+                            // },
                         ]}
                         activeTabKey={activeTabKey}
                         onTabChange={(key: string) => {

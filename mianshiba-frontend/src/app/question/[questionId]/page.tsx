@@ -11,7 +11,7 @@ import "./index.css";
  */
 export default async function QuestionPage({ params }) {
   // 题目id
-  const { questionId } = params;
+  const { questionId } = await params;
   let question = undefined;
 
   try {
