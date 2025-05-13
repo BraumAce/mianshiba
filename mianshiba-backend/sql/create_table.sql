@@ -71,10 +71,10 @@ create table if not exists question_bank_question
 
 -- 功能扩展：用户个人主页资料修改
 ALTER TABLE user
-    ADD phoneNumber VARCHAR(20) COMMENT '手机号',
-    ADD email VARCHAR(256) COMMENT '邮箱',
-    ADD grade VARCHAR(50) COMMENT '年级',
-    ADD workExperience VARCHAR(512) COMMENT '工作经验',
+    ADD phoneNumber        VARCHAR(20) COMMENT '手机号',
+    ADD email              VARCHAR(256) COMMENT '邮箱',
+    ADD grade              VARCHAR(50) COMMENT '年级',
+    ADD workExperience     VARCHAR(512) COMMENT '工作经验',
     ADD expertiseDirection VARCHAR(512) COMMENT '擅长方向';
 
 -- 功能扩展：AI 模拟面试功能
@@ -325,6 +325,29 @@ CREATE TABLE IF NOT EXISTS user_follow_mapping
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8mb4
   COLLATE = utf8mb4_unicode_ci COMMENT ='用户关注关联表';
+
+-- 用户模拟面试表
+DROP TABLE IF EXISTS user_mock_interview;
+CREATE TABLE IF NOT EXISTS user_mock_interview
+(
+    id              bigint       not null auto_increment comment '主键ID',
+    interview_id    bigint       not null comment '面试ID',
+    work_experience varchar(256) not null comment '工作年限',
+    job_position    varchar(256) not null comment '工作岗位',
+    difficulty      varchar(50)  not null comment '面试难度',
+    messages        mediumtext   null comment '消息列表',
+    status          int          not null default 0 comment '状态(0:待开始;1:进行中;2:已结束)',
+    create_operator bigint       not null comment '创建者ID',
+    create_time     datetime     not null default CURRENT_TIMESTAMP comment '创建时间',
+    update_time     datetime     not null default CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP comment '更新时间',
+    is_delete       tinyint      not null default 0 comment '是否删除(0:否;1:是)',
+    PRIMARY KEY (id),
+    index idx_interview_id (interview_id),
+    index idx_create_operator (create_operator),
+    CONSTRAINT fk_user_interview FOREIGN KEY (create_operator) REFERENCES user_info (user_id) ON DELETE CASCADE
+) ENGINE = InnoDB
+  DEFAULT CHARSET = utf8mb4
+  COLLATE = utf8mb4_unicode_ci COMMENT = '用户模拟面试表';
 
 -- 用户行为记录表
 DROP TABLE IF EXISTS user_behavior_log;
