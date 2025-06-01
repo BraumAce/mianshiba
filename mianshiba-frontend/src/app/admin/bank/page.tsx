@@ -6,7 +6,7 @@ import { deleteQuestionBankUsingPost, listQuestionBankByPageUsingPost } from '@/
 import { PlusOutlined } from '@ant-design/icons';
 import type { ActionType, ProColumns } from '@ant-design/pro-components';
 import { PageContainer, ProTable } from '@ant-design/pro-components';
-import { Button, message, Space, Typography } from 'antd';
+import { App, Button, Space, Typography } from 'antd';
 import React, { useRef, useState } from 'react';
 
 /**
@@ -22,6 +22,7 @@ const QuestionBankAdminPage: React.FC = () => {
   const actionRef = useRef<ActionType>();
   // 当前题库点击的数据
   const [currentRow, setCurrentRow] = useState<API.QuestionBank>();
+  const { message } = App.useApp();
 
   /**
    * 删除节点
@@ -40,9 +41,9 @@ const QuestionBankAdminPage: React.FC = () => {
       // 删除成功后刷新表格
       actionRef?.current?.reload();
       return true;
-    } catch (error: any) {
+    } catch (e: any) {
       hide();
-      message.error('删除失败，' + error.message);
+      message.error('删除失败，' + e.message);
       return false;
     }
   };
@@ -189,4 +190,12 @@ const QuestionBankAdminPage: React.FC = () => {
   );
 };
 
-export default QuestionBankAdminPage;
+const AppQuestionBankAdminPage: React.FC = () => {
+  return (
+    <App>
+      <QuestionBankAdminPage />
+    </App>
+  );
+};
+
+export default AppQuestionBankAdminPage;
