@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import ReactECharts from "echarts-for-react";
 import dayjs from "dayjs";
-import { message } from "antd";
+import { App } from "antd";
 import { getUserSignInRecordUsingGet } from "@/api/userController";
 import "./index.css";
 
@@ -14,7 +14,7 @@ interface Props { }
  */
 const CalendarChart = (props: Props) => {
     const { } = props;
-
+    const { message } = App.useApp();
     const [dataList, setDataList] = useState<number[]>([]);
     const year = new Date().getFullYear();
 
@@ -24,6 +24,7 @@ const CalendarChart = (props: Props) => {
             const res = await getUserSignInRecordUsingGet({
                 year,
             });
+            // @ts-ignore
             setDataList(res.data);
         } catch (e: any) {
             message.error("获取刷题签到记录失败，" + e.message);
@@ -75,4 +76,10 @@ const CalendarChart = (props: Props) => {
     return <ReactECharts className="calendar-chart" option={options} />;
 };
 
-export default CalendarChart;
+const AppCalendarChart: React.FC = () => (
+  <App>
+      <CalendarChart />
+  </App>
+);
+
+export default AppCalendarChart;
