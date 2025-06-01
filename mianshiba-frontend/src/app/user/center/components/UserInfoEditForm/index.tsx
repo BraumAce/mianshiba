@@ -3,7 +3,10 @@ import { editUserUsingPost } from "@/api/userController";
 import React from "react";
 import { useDispatch } from "react-redux";
 import { AppDispatch } from "@/stores";
-import loginUser, { setLoginUser } from "@/stores/loginUser";
+import { setLoginUser } from "@/stores/loginUser";
+import { useAppSelector } from "@/stores/hooks";
+import { selectLoginUser } from "@/stores/loginUser";
+import { useRouter } from "next/navigation";
 
 interface Props {
     user: API.LoginUserVO;
@@ -15,7 +18,7 @@ interface Props {
  */
 const UserInfoEditForm = (props: Props) => {
     const dispatch = useDispatch<AppDispatch>();
-
+    const router = useRouter();
     const [form] = Form.useForm();
     const { message } = App.useApp();
     const { user } = props;
@@ -33,6 +36,8 @@ const UserInfoEditForm = (props: Props) => {
             hide();
             message.success("操作成功");
             dispatch(setLoginUser({ ...user, ...values }));
+            // 提交后刷新当前页面
+            router.refresh();
         } catch (e: any) {
             hide();
             message.error("操作失败，" + e.message);
@@ -71,23 +76,13 @@ const UserInfoEditForm = (props: Props) => {
     );
 };
 
-const AppUserInfoEditForm: React.FC = () => (
-    <App>
-        <UserInfoEditForm user={{
-            createTime: undefined,
-            email: undefined,
-            expertiseDirection: undefined,
-            grade: undefined,
-            id: undefined,
-            phoneNumber: undefined,
-            updateTime: undefined,
-            userAvatar: undefined,
-            userName: undefined,
-            userProfile: undefined,
-            userRole: undefined,
-            workExperience: undefined
-        }} />
-    </App>
-);
+const AppUserInfoEditForm: React.FC = () => {
+    const user = useAppSelector(selectLoginUser);
+    return (
+      <App>
+          <UserInfoEditForm user={user} />
+      </App>
+    );
+};
 
 export default AppUserInfoEditForm;
