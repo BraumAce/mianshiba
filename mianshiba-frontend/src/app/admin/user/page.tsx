@@ -1,13 +1,14 @@
 "use client";
 
-import CreateModal from './components/CreateModal';
-import UpdateModal from './components/UpdateModal';
+import AppCreateModal from './components/CreateModal';
+import AppUpdateModal from './components/UpdateModal';
 import { deleteUserUsingPost, listUserByPageUsingPost } from '@/api/userController';
 import { PlusOutlined } from '@ant-design/icons';
 import type { ActionType, ProColumns } from '@ant-design/pro-components';
 import { PageContainer, ProTable } from '@ant-design/pro-components';
 import { Button, message, Space, Typography } from 'antd';
 import React, { useRef, useState } from 'react';
+import { App } from 'antd'; // 引入 App
 
 /**
  * 用户管理页面
@@ -170,7 +171,7 @@ const UserAdminPage: React.FC = () => {
         }}
         columns={columns}
       />
-      <CreateModal
+      <AppCreateModal
         visible={createModalVisible}
         columns={columns}
         onSubmit={() => {
@@ -181,7 +182,7 @@ const UserAdminPage: React.FC = () => {
           setCreateModalVisible(false);
         }}
       />
-      <UpdateModal
+      <AppUpdateModal
         visible={updateModalVisible}
         columns={columns}
         oldData={currentRow}
@@ -198,4 +199,13 @@ const UserAdminPage: React.FC = () => {
   );
 };
 
-export default UserAdminPage;
+// 使用 App 包围组件
+const AppUserAdminPage: React.FC = () => {
+  return (
+    <App>
+      <UserAdminPage />
+    </App>
+  );
+};
+
+export default AppUserAdminPage;
