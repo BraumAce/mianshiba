@@ -2,117 +2,96 @@
 /* eslint-disable */
 import request from "@/libs/request";
 
-/** login GET /api/oauth/callback */
+/** login GET /api/oauth/callback/${param0} */
 export async function loginUsingGet(
   // 叠加生成的Param类型 (非body参数swagger默认没有生成对象)
   params: API.loginUsingGETParams,
   options?: { [key: string]: any }
 ) {
-  return request<Record<string, any>>("/api/oauth/callback", {
+  const { source: param0, ...queryParams } = params;
+  return request<API.ModelAndView>(`/api/oauth/callback/${param0}`, {
     method: "GET",
     params: {
-      ...params,
+      ...queryParams,
     },
     ...(options || {}),
   });
 }
 
-/** login PUT /api/oauth/callback */
+/** login PUT /api/oauth/callback/${param0} */
 export async function loginUsingPut(
   // 叠加生成的Param类型 (非body参数swagger默认没有生成对象)
   params: API.loginUsingPUTParams,
   options?: { [key: string]: any }
 ) {
-  return request<Record<string, any>>("/api/oauth/callback", {
+  const { source: param0, ...queryParams } = params;
+  return request<API.ModelAndView>(`/api/oauth/callback/${param0}`, {
     method: "PUT",
     params: {
-      ...params,
+      ...queryParams,
     },
     ...(options || {}),
   });
 }
 
-/** login POST /api/oauth/callback */
+/** login POST /api/oauth/callback/${param0} */
 export async function loginUsingPost(
   // 叠加生成的Param类型 (非body参数swagger默认没有生成对象)
   params: API.loginUsingPOSTParams,
   options?: { [key: string]: any }
 ) {
-  return request<Record<string, any>>("/api/oauth/callback", {
+  const { source: param0, ...queryParams } = params;
+  return request<API.ModelAndView>(`/api/oauth/callback/${param0}`, {
     method: "POST",
     params: {
-      ...params,
+      ...queryParams,
     },
     ...(options || {}),
   });
 }
 
-/** login DELETE /api/oauth/callback */
+/** login DELETE /api/oauth/callback/${param0} */
 export async function loginUsingDelete(
   // 叠加生成的Param类型 (非body参数swagger默认没有生成对象)
   params: API.loginUsingDELETEParams,
   options?: { [key: string]: any }
 ) {
-  return request<Record<string, any>>("/api/oauth/callback", {
+  const { source: param0, ...queryParams } = params;
+  return request<API.ModelAndView>(`/api/oauth/callback/${param0}`, {
     method: "DELETE",
     params: {
-      ...params,
+      ...queryParams,
     },
     ...(options || {}),
   });
 }
 
-/** login PATCH /api/oauth/callback */
+/** login PATCH /api/oauth/callback/${param0} */
 export async function loginUsingPatch(
   // 叠加生成的Param类型 (非body参数swagger默认没有生成对象)
   params: API.loginUsingPATCHParams,
   options?: { [key: string]: any }
 ) {
-  return request<Record<string, any>>("/api/oauth/callback", {
+  const { source: param0, ...queryParams } = params;
+  return request<API.ModelAndView>(`/api/oauth/callback/${param0}`, {
     method: "PATCH",
     params: {
-      ...params,
+      ...queryParams,
     },
     ...(options || {}),
   });
 }
 
-/** renderAuth GET /api/oauth/render */
-export async function renderAuthUsingGet(options?: { [key: string]: any }) {
-  return request<any>("/api/oauth/render", {
+/** renderAuth GET /api/oauth/render/${param0} */
+export async function renderAuthUsingGet(
+  // 叠加生成的Param类型 (非body参数swagger默认没有生成对象)
+  params: API.renderAuthUsingGETParams,
+  options?: { [key: string]: any }
+) {
+  const { source: param0, ...queryParams } = params;
+  return request<string>(`/api/oauth/render/${param0}`, {
     method: "GET",
-    ...(options || {}),
-  });
-}
-
-/** renderAuth PUT /api/oauth/render */
-export async function renderAuthUsingPut(options?: { [key: string]: any }) {
-  return request<any>("/api/oauth/render", {
-    method: "PUT",
-    ...(options || {}),
-  });
-}
-
-/** renderAuth POST /api/oauth/render */
-export async function renderAuthUsingPost(options?: { [key: string]: any }) {
-  return request<any>("/api/oauth/render", {
-    method: "POST",
-    ...(options || {}),
-  });
-}
-
-/** renderAuth DELETE /api/oauth/render */
-export async function renderAuthUsingDelete(options?: { [key: string]: any }) {
-  return request<any>("/api/oauth/render", {
-    method: "DELETE",
-    ...(options || {}),
-  });
-}
-
-/** renderAuth PATCH /api/oauth/render */
-export async function renderAuthUsingPatch(options?: { [key: string]: any }) {
-  return request<any>("/api/oauth/render", {
-    method: "PATCH",
+    params: { ...queryParams },
     ...(options || {}),
   });
 }

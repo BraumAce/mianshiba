@@ -2,6 +2,7 @@
 
 import React from "react";
 import { userLoginUsingPost } from '@/api/userController';
+import { renderAuthUsingGet } from "@/api/restAuthController";
 import { AppDispatch } from '@/stores';
 import { setLoginUser } from '@/stores/loginUser';
 import {
@@ -19,9 +20,10 @@ import {
   ProFormCheckbox,
   ProFormText,
 } from '@ant-design/pro-components';
-import { App, Divider, Space, Tabs, message, theme } from 'antd';
+import { App, Divider, Space, Tabs, theme } from 'antd';
 import { useRouter } from 'next/navigation';
 import Image from "next/image";
+import Link from "next/link";
 import type { CSSProperties } from 'react';
 import { useState } from 'react';
 import { useDispatch } from 'react-redux';
@@ -41,7 +43,7 @@ const iconStyles: CSSProperties = {
  * @param props
  * @returns UserLoginPage
  */
-const LoginPage: React.FC = (props) => {
+const UserLoginPage: React.FC = (props) => {
   const [loginType, setLoginType] = useState<LoginType>('phone');
   const [form] = ProForm.useForm();
   const { token } = theme.useToken();
@@ -54,7 +56,7 @@ const LoginPage: React.FC = (props) => {
   ];
 
   /**
-   * 提交
+   * 登录提交
    * @param values
    */
   const doSubmit = async (values: any) => {
@@ -63,12 +65,29 @@ const LoginPage: React.FC = (props) => {
       if (res.data) {
         message.success("登录成功！");
         // 保存用户登录态
+        // @ts-ignore
         dispatch(setLoginUser(res.data));
         router.replace("/");
         form.resetFields();
       }
     } catch (e: any) {
       message.error('登录失败，' + e.message);
+    }
+  };
+
+  const doAuthLogin = async (loginType: string) => {
+    try {
+      const res = await renderAuthUsingGet({ source: loginType });
+      const authUrl = res.data;
+      if (authUrl) {
+        window.location.href = authUrl;
+      } else {
+        message.error(`${loginType} 登录接口未返回有效地址`);
+      }
+    } catch (e: any) {
+      message.error(`跳转至 ${loginType} 登录失败：${e.message}`);
+    } finally {
+      message.success(`跳转至 ${loginType} 登录`);
     }
   };
 
@@ -125,6 +144,7 @@ const LoginPage: React.FC = (props) => {
                   border: '1px solid ' + token.colorPrimaryBorder,
                   borderRadius: '50%',
                 }}
+                onClick={() => doAuthLogin('qq')}
               >
                 <QqOutlined style={{ ...iconStyles, color: '#1677FF' }} />
               </div>
@@ -139,6 +159,7 @@ const LoginPage: React.FC = (props) => {
                   border: '1px solid ' + token.colorPrimaryBorder,
                   borderRadius: '50%',
                 }}
+                onClick={() => doAuthLogin('github')}
               >
                 <GithubOutlined style={{ ...iconStyles, color: '#1677FF' }} />
               </div>
@@ -153,6 +174,7 @@ const LoginPage: React.FC = (props) => {
                   border: '1px solid ' + token.colorPrimaryBorder,
                   borderRadius: '50%',
                 }}
+                onClick={() => doAuthLogin('google')}
               >
                 <GoogleOutlined style={{ ...iconStyles, color: '#1677FF' }} />
               </div>
@@ -249,18 +271,21 @@ const LoginPage: React.FC = (props) => {
         )}
         <div
           style={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
             marginBlockEnd: 24,
           }}
         >
           <ProFormCheckbox noStyle name="autoLogin">
             自动登录
           </ProFormCheckbox>
-          <a
-            style={{
-              float: 'right',
-            }}
-          >
-            忘记密码
+          {/*<a style={{ textDecoration: 'none' }} >*/}
+          {/*  忘记密码*/}
+          {/*</a>*/}
+          <a style={{ color: 'rgba(0, 0, 0, 0.45)', textDecoration: 'none' }} >
+            还没有账号？
+            <Link href={"/user/register"}>去注册 ▷</Link>
           </a>
         </div>
       </LoginFormPage>
@@ -268,10 +293,10 @@ const LoginPage: React.FC = (props) => {
   );
 };
 
-const UserLoginPage: React.FC = () => (
+const AppUserLoginPage: React.FC = () => (
   <App>
-    <LoginPage />
+    <UserLoginPage />
   </App>
 );
 
-export default UserLoginPage;
+export default AppUserLoginPage;
