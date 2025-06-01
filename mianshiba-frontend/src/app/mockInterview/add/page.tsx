@@ -1,6 +1,6 @@
 "use client";
 
-import { Button, Form, Input, message } from "antd";
+import { App, Button, Form, Input } from "antd";
 import React, { useState } from "react";
 import { addMockInterviewUsingPost } from "@/api/mockInterviewController";
 import { useRouter } from "next/navigation";
@@ -14,6 +14,7 @@ interface Props { }
  * @constructor
  */
 const CreateMockInterviewPage: React.FC<Props> = (props) => {
+    const { message } = App.useApp();
     const [form] = Form.useForm();
     const [loading, setLoading] = useState(false);
     const router = useRouter();
@@ -33,9 +34,9 @@ const CreateMockInterviewPage: React.FC<Props> = (props) => {
             form.resetFields(); // 重置表单
             // 跳转到模拟面试列表页面
             router.push("/mockInterview/chat/" + res.data);
-        } catch (error: any) {
+        } catch (e: any) {
             hide();
-            message.error("创建失败，" + error.message);
+            message.error("创建失败，" + e.message);
         }
         setLoading(false);
     };
@@ -75,4 +76,10 @@ const CreateMockInterviewPage: React.FC<Props> = (props) => {
     );
 };
 
-export default CreateMockInterviewPage;
+const AppCreateMockInterviewPage: React.FC = () => (
+  <App>
+      <CreateMockInterviewPage />
+  </App>
+);
+
+export default AppCreateMockInterviewPage;

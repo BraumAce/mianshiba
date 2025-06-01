@@ -1,6 +1,6 @@
 "use client";
 
-import { Button, Card, Input, List, message, Tag } from "antd";
+import { App, Button, Card, Input, List, Tag } from "antd";
 import React, { useEffect, useState } from "react";
 import {
     getMockInterviewByIdUsingGet,
@@ -19,8 +19,9 @@ interface MockInterviewDetail extends API.MockInterview {
     parsedMessages?: Message[];
 }
 
-export default function InterviewRoomPage({ params }) {
-    const { mockInterviewId } = params;
+const InterviewRoomPage: React.FC<{ params: { mockInterviewId: string } }> = ({ params }) => {
+    // 解包 params
+    const { mockInterviewId } = React.use(params);
     const router = useRouter();
     const [loading, setLoading] = useState(false);
     const [inputMessage, setInputMessage] = useState("");
@@ -28,6 +29,7 @@ export default function InterviewRoomPage({ params }) {
     const [messages, setMessages] = useState<Message[]>([]);
     const [isStarted, setIsStarted] = useState(false);
     const [isEnded, setIsEnded] = useState(false);
+    const { message } = App.useApp();
 
     // 加载面试数据
     const loadInterview = async () => {
@@ -129,7 +131,7 @@ export default function InterviewRoomPage({ params }) {
             </div>
 
             {/* 消息列表 */}
-            <Card className="message-area">
+            <Card variant="outlined" className="message-area">
                 <List
                     dataSource={messages}
                     split={false}
@@ -170,4 +172,13 @@ export default function InterviewRoomPage({ params }) {
             </div>
         </div>
     );
-}
+};
+
+// 使用 App 包围组件
+const AppInterviewRoomPage: React.FC<{ params: { mockInterviewId: string } }> = ({ params }) => (
+    <App>
+        <InterviewRoomPage params={params} />
+    </App>
+);
+
+export default AppInterviewRoomPage;
