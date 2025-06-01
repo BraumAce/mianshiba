@@ -1,8 +1,8 @@
 "use client";
 
 import React from "react";
-import { LoginForm, ProForm, ProFormText } from "@ant-design/pro-components";
-import { message } from "antd";
+import { LoginFormPage, ProForm, ProFormText } from "@ant-design/pro-components";
+import { App } from "antd";
 import { LockOutlined, UserOutlined } from "@ant-design/icons";
 import { userRegisterUsingPost } from "@/api/userController";
 import Link from "next/link";
@@ -16,6 +16,7 @@ import "./index.css";
  */
 const UserRegisterPage: React.FC = (props) => {
   const [form] = ProForm.useForm();
+  const { message } = App.useApp();
   const router = useRouter();
 
   /**
@@ -30,18 +31,23 @@ const UserRegisterPage: React.FC = (props) => {
         // 前往登录页
         router.push("/user/login");
       }
-    } catch (e) {
+    } catch (e: any) {
       message.error("注册失败，" + e.message);
     }
   };
 
   return (
-    <div id="userRegisterPage">
-      <LoginForm<API.UserAddRequest>
+    <div id="userRegisterPage"
+      style={{
+        backgroundColor: 'white',
+        height: '100vh',
+      }}>
+      <LoginFormPage<API.UserAddRequest>
         form={form}
         logo={
           <Image src="/assets/logo.png" alt="面试吧" width={44} height={44} />
         }
+        backgroundVideoUrl="https://gw.alipayobjects.com/v/huamei_gcee1x/afts/video/jXRBRK_VAwoAAAAAAAAAAAAAK4eUAQBr"
         title="面试吧 - 用户注册"
         subTitle="程序员面试刷题网站"
         onFinish={doSubmit}
@@ -104,9 +110,15 @@ const UserRegisterPage: React.FC = (props) => {
             去登录
           </Link>
         </div>
-      </LoginForm>
+      </LoginFormPage>
     </div>
   );
 };
 
-export default UserRegisterPage;
+const AppUserRegisterPage: React.FC = () => (
+  <App>
+    <UserRegisterPage />
+  </App>
+);
+
+export default AppUserRegisterPage;
