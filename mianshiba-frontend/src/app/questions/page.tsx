@@ -1,7 +1,6 @@
 "use server";
 
 import Title from "antd/es/typography/Title";
-import { message } from "antd";
 import { searchQuestionVoByPageUsingPost } from "@/api/questionController";
 import QuestionTable from "@/components/QuestionTable";
 import "./index.css";
@@ -27,7 +26,13 @@ export default async function QuestionsPage({ searchParams }: any) {
     questionList = res.data.records ?? [];
     total = res.data.total ?? 0;
   } catch (e: any) {
-    message.error("获取题目列表失败，" + e.message);
+    // 服务端组件中不能使用 antd 的 message 组件
+    console.error("获取题目列表失败：", e);
+  }
+
+  // 错误处理
+  if (!questionList) {
+    return <div>获取题目列表失败，请刷新重试！</div>;
   }
 
   return (
