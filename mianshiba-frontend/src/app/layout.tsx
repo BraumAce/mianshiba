@@ -39,6 +39,7 @@ const InitLayout: React.FC<
     ) {
       if (res.data) {
         // 更新全局用户状态
+        // @ts-ignore
         dispatch(setLoginUser(res.data));
       } else { }
     }

@@ -1,4 +1,4 @@
-import { Button, Form, Input, message } from "antd";
+import { App, Button, Form, Input } from "antd";
 import { editUserUsingPost } from "@/api/userController";
 import React from "react";
 import { useDispatch } from "react-redux";
@@ -17,6 +17,7 @@ const UserInfoEditForm = (props: Props) => {
     const dispatch = useDispatch<AppDispatch>();
 
     const [form] = Form.useForm();
+    const { message } = App.useApp();
     const { user } = props;
     form.setFieldsValue(user);
 
@@ -32,9 +33,9 @@ const UserInfoEditForm = (props: Props) => {
             hide();
             message.success("操作成功");
             dispatch(setLoginUser({ ...user, ...values }));
-        } catch (error: any) {
+        } catch (e: any) {
             hide();
-            message.error("操作失败，" + error.message);
+            message.error("操作失败，" + e.message);
         }
     };
 
@@ -70,4 +71,23 @@ const UserInfoEditForm = (props: Props) => {
     );
 };
 
-export default UserInfoEditForm;
+const AppUserInfoEditForm: React.FC = () => (
+    <App>
+        <UserInfoEditForm user={{
+            createTime: undefined,
+            email: undefined,
+            expertiseDirection: undefined,
+            grade: undefined,
+            id: undefined,
+            phoneNumber: undefined,
+            updateTime: undefined,
+            userAvatar: undefined,
+            userName: undefined,
+            userProfile: undefined,
+            userRole: undefined,
+            workExperience: undefined
+        }} />
+    </App>
+);
+
+export default AppUserInfoEditForm;
