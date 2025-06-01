@@ -8,9 +8,9 @@ import { useSelector } from "react-redux";
 import { RootState } from "@/stores";
 import { useState } from "react";
 import "./index.css";
-import CalendarChart from "./components/CalendarChart";
+import AppCalendarChart from "./components/CalendarChart";
 import UserInfo from "@/app/user/center/components/UserInfo";
-import UserInfoEditForm from "@/app/user/center/components/UserInfoEditForm";
+import AppUserInfoEditForm from "@/app/user/center/components/UserInfoEditForm";
 import { USER_ROLE_ENUM, USER_ROLE_TEXT_MAP } from "@/constants/user";
 import dayjs from "dayjs";
 
@@ -98,13 +98,13 @@ export default function UserCenterPage() {
                                 />
                                 {currentEditState === "查看信息" && <UserInfo user={user} />}
                                 {currentEditState === "修改信息" && (
-                                    <UserInfoEditForm user={user} />
+                                    <AppUserInfoEditForm user={user} />
                                 )}
                             </>
                         )}
                         {activeTabKey === "record" && (
                             <>
-                                <CalendarChart />
+                                <AppCalendarChart />
                             </>
                         )}
                         {activeTabKey === "others" && <>bbb</>}

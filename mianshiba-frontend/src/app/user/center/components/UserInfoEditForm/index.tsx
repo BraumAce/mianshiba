@@ -4,8 +4,6 @@ import React from "react";
 import { useDispatch } from "react-redux";
 import { AppDispatch } from "@/stores";
 import { setLoginUser } from "@/stores/loginUser";
-import { useAppSelector } from "@/stores/hooks";
-import { selectLoginUser } from "@/stores/loginUser";
 import { useRouter } from "next/navigation";
 
 interface Props {
@@ -22,7 +20,11 @@ const UserInfoEditForm = (props: Props) => {
     const [form] = Form.useForm();
     const { message } = App.useApp();
     const { user } = props;
-    form.setFieldsValue(user);
+
+    // 确保在组件挂载时设置表单的初始值
+    React.useEffect(() => {
+        form.setFieldsValue(user);
+    }, [user, form]);
 
     /**
      * 提交
@@ -30,17 +32,16 @@ const UserInfoEditForm = (props: Props) => {
      * @param values
      */
     const doSubmit = async (values: API.UserEditRequest) => {
-        const hide = message.loading("正在操作");
+        const hide = message.loading("正在修改...");
         try {
             await editUserUsingPost(values);
             hide();
-            message.success("操作成功");
+            message.success("修改成功");
             dispatch(setLoginUser({ ...user, ...values }));
-            // 提交后刷新当前页面
             router.refresh();
         } catch (e: any) {
             hide();
-            message.error("操作失败，" + e.message);
+            message.error("修改失败，" + e.message);
         }
     };
 
@@ -76,13 +77,10 @@ const UserInfoEditForm = (props: Props) => {
     );
 };
 
-const AppUserInfoEditForm: React.FC = () => {
-    const user = useAppSelector(selectLoginUser);
-    return (
-      <App>
-          <UserInfoEditForm user={user} />
-      </App>
-    );
-};
+const AppUserInfoEditForm: React.FC<{ user: API.LoginUserVO }> = ({ user }) => (
+    <App>
+        <UserInfoEditForm user={user} />
+    </App>
+);
 
 export default AppUserInfoEditForm;
