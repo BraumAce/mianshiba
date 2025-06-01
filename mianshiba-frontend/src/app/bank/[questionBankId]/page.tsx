@@ -1,6 +1,6 @@
 "use server";
 
-import { Avatar, Button, Card, message } from "antd";
+import { Avatar, Button, Card } from "antd";
 import { getQuestionBankVoByIdUsingGet } from "@/api/questionBankController";
 import Meta from "antd/es/card/Meta";
 import Title from "antd/es/typography/Title";
@@ -24,12 +24,8 @@ export default async function BankPage({ params }) {
       pageSize: 200,
     });
     bank = bankRes.data;
-  } catch (e) {
-    if (e instanceof Error) {
-      message.error("获取题目列表失败：" + e.message);
-    } else {
-      message.error("获取题目列表失败.");
-    }
+  } catch (e: any) {
+      console.error("获取题库详情失败：" + e);
   }
 
   // 错误处理

@@ -1,6 +1,6 @@
 "use server";
 
-import { Flex, Menu, message } from "antd";
+import { Flex, Menu } from "antd";
 import { getQuestionBankVoByIdUsingGet } from "@/api/questionBankController";
 import { getQuestionVoByIdUsingGet } from "@/api/questionController";
 import { Content } from "antd/es/layout/layout";
@@ -27,12 +27,8 @@ export default async function BankQuestionPage({ params }) {
       pageSize: 200,
     });
     bank = bankRes.data;
-  } catch (e) {
-    if (e instanceof Error) {
-      message.error("获取题目列表失败：" + e.message);
-    } else {
-      message.error("获取题目列表失败.");
-    }
+  } catch (e: any) {
+    console.error("获取题库详情失败：" + e);
   }
 
   try {
@@ -40,12 +36,8 @@ export default async function BankQuestionPage({ params }) {
       id: questionId,
     });
     question = questionRes.data;
-  } catch (e) {
-    if (e instanceof Error) {
-      message.error("获取题目详情失败：" + e.message);
-    } else {
-      message.error("获取题目详情失败.");
-    }
+  } catch (e: any) {
+    console.error("获取题目详情失败：" + e);
   }
 
   // 错误处理

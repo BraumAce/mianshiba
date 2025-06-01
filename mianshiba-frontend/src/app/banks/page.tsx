@@ -21,11 +21,13 @@ export default async function BanksPage() {
       sortOrder: "descend",
     });
     questionBankList = (questionBankRes as any).data.records ?? [];
-  } catch (e) {
-    if (e instanceof Error) {
-      console.error("获取题库列表失败：" + e.message);
-    }
-    console.error("获取题库列表失败.");
+  } catch (e: any) {
+    console.error("获取题库列表失败：" + e);
+  }
+
+  // 错误处理
+  if (!questionBankList) {
+    return <div>获取题目详情失败，请刷新重试！</div>;
   }
 
   return (
