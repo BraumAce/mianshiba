@@ -24,7 +24,7 @@ const QuestionCard = (props: Props) => {
 
   return (
     <div className="question-card">
-      <Card bordered={false}>
+      <Card variant="outlined">
         <Title level={1} style={{ fontSize: 24 }}>
           {question.title}
         </Title>
@@ -33,7 +33,7 @@ const QuestionCard = (props: Props) => {
         <MdViewer value={question.content} />
       </Card>
       <div style={{ marginBottom: 16 }} />
-      <Card title="参考答案" bordered={false}>
+      <Card title="参考答案" variant="outlined">
         <MdViewer value={question.answer} />
       </Card>
     </div>
