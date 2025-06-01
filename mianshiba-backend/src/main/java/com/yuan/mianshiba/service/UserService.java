@@ -11,6 +11,7 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 
 import me.chanjar.weixin.common.bean.WxOAuth2UserInfo;
+import me.zhyd.oauth.model.AuthUser;
 
 /**
  * 用户服务
@@ -47,6 +48,15 @@ public interface UserService extends IService<User> {
      * @return 脱敏后的用户信息
      */
     LoginUserVO userLoginByMpOpen(WxOAuth2UserInfo wxOAuth2UserInfo, HttpServletRequest request);
+
+    /**
+     * 用户登录（三方用户平台）
+     *
+     * @param authUser 三方用户信息
+     * @param request
+     * @return 脱敏后的用户信息
+     */
+    LoginUserVO userLoginByAuth(AuthUser authUser, HttpServletRequest request);
 
     /**
      * 获取当前登录用户
@@ -87,6 +97,14 @@ public interface UserService extends IService<User> {
      * @return
      */
     boolean userLogout(HttpServletRequest request);
+
+    /**
+     * 根据账户获取用户信息
+     *
+     * @param userAccount
+     * @return
+     */
+    User getUserByAccount(String userAccount);
 
     /**
      * 获取脱敏的已登录用户信息

@@ -20,6 +20,7 @@ import com.yuan.mianshiba.service.UserService;
 import com.yuan.mianshiba.utils.SqlUtils;
 import lombok.extern.slf4j.Slf4j;
 import me.chanjar.weixin.common.bean.WxOAuth2UserInfo;
+import me.zhyd.oauth.model.AuthUser;
 import org.apache.commons.lang3.StringUtils;
 import org.redisson.api.RBitSet;
 import org.redisson.api.RedissonClient;
@@ -119,7 +120,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
 //        request.getSession().setAttribute(UserConstant.USER_LOGIN_STATE, user);
         // 使用 sa-token 登录，判断设备实现同端登录互斥
         StpUtil.login(user.getId(), DeviceUtils.getRequestDevice(request));
-        String deviceType = StpUtil.getLoginDeviceType();
+//        String deviceType = StpUtil.getLoginDeviceType();
         StpUtil.getSession().set(UserConstant.USER_LOGIN_STATE, user);
 
         return this.getLoginUserVO(user);
@@ -153,6 +154,39 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
             }
             // 记录用户的登录态
             request.getSession().setAttribute(UserConstant.USER_LOGIN_STATE, user);
+            return getLoginUserVO(user);
+        }
+    }
+
+    @Override
+    public LoginUserVO userLoginByAuth(AuthUser authUser, HttpServletRequest request) {
+        String unionId = authUser.getUuid();
+        // 单机锁
+        synchronized (unionId.intern()) {
+            // 查询用户是否已存在
+            QueryWrapper<User> queryWrapper = new QueryWrapper<>();
+            queryWrapper.eq("unionId", unionId);
+            User user = this.getOne(queryWrapper);
+            // 被封号，禁止登录
+            if (user != null && UserRoleEnum.BAN.getValue().equals(user.getUserRole())) {
+                throw new BusinessException(ErrorCode.FORBIDDEN_ERROR, "该用户已被封，禁止登录");
+            }
+            // 用户不存在则创建
+            if (user == null) {
+                user = new User();
+                user.setUnionId(unionId);
+                user.setUserAvatar(authUser.getAvatar());
+                user.setUserAccount(authUser.getUsername());
+                user.setUserName(authUser.getUsername());
+                user.setUserPassword("12345678");
+                boolean result = this.save(user);
+                if (!result) {
+                    throw new BusinessException(ErrorCode.SYSTEM_ERROR, "登录失败");
+                }
+            }
+            // 记录用户的登录态
+            StpUtil.login(user.getId(), DeviceUtils.getRequestDevice(request));
+            StpUtil.getSession().set(UserConstant.USER_LOGIN_STATE, user);
             return getLoginUserVO(user);
         }
     }
@@ -231,6 +265,13 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         StpUtil.logout();
 //        request.getSession().removeAttribute(UserConstant.USER_LOGIN_STATE);
         return true;
+    }
+
+    @Override
+    public User getUserByAccount(String userAccount) {
+        QueryWrapper<User> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("userAccount", userAccount);
+        return this.baseMapper.selectOne(queryWrapper);
     }
 
     @Override

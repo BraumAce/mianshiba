@@ -2,6 +2,9 @@ package com.yuan.mianshiba.controller;
 
 import com.alibaba.fastjson.JSONObject;
 import com.xkcoding.http.config.HttpConfig;
+import com.yuan.mianshiba.common.BaseResponse;
+import com.yuan.mianshiba.common.ResultUtils;
+import com.yuan.mianshiba.service.UserService;
 import lombok.extern.slf4j.Slf4j;
 import me.zhyd.oauth.config.AuthConfig;
 import me.zhyd.oauth.enums.scope.AuthGithubScope;
@@ -16,6 +19,7 @@ import me.zhyd.oauth.utils.AuthStateUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
+import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -34,19 +38,19 @@ import java.util.Map;
 @RequestMapping("/oauth")
 public class RestAuthController {
 
-//    @RequestMapping("/callback")
-//    public Object login(AuthCallback callback) {
-//        AuthRequest authRequest = getAuthRequest();
-//        return authRequest.login(callback);
-//    }
+    @Resource
+    private com.yuan.mianshiba.config.AuthConfig authConfig;
+
+    @Resource
+    private UserService userService;
 
     @GetMapping("/render/{source}")
-    public void renderAuth(@PathVariable("source") String source, HttpServletResponse response) throws IOException {
+    public BaseResponse<String> renderAuth(@PathVariable("source") String source, HttpServletResponse response) throws IOException {
         log.info("进入render：{}", source);
         AuthRequest authRequest = getAuthRequest(source);
         String authorizeUrl = authRequest.authorize(AuthStateUtils.createState());
         log.info(authorizeUrl);
-        response.sendRedirect(authorizeUrl);
+        return ResultUtils.success(authorizeUrl);
     }
 
     @RequestMapping("/callback/{source}")
@@ -57,9 +61,9 @@ public class RestAuthController {
         log.info(JSONObject.toJSONString(response));
 
         if (response.ok()) {
-//            userService.save(response.getData());
-//            return authRequest.login(callback);
-            return new ModelAndView("redirect:/users");
+            AuthUser authUser = response.getData();
+            userService.userLoginByAuth(authUser, request);
+            return new ModelAndView("redirect:http://localhost:3000");
         }
 
         Map<String, Object> map = new HashMap<>(1);
@@ -79,16 +83,16 @@ public class RestAuthController {
         switch (source.toLowerCase()) {
             case "qq":
                 authRequest = new AuthQqRequest(AuthConfig.builder()
-                        .clientId("")
-                        .clientSecret("")
-                        .redirectUri("http://localhost:8443/oauth/callback/qq")
+                        .clientId(authConfig.getClientId("qq"))
+                        .clientSecret(authConfig.getClientSecret("qq"))
+                        .redirectUri(authConfig.getRedirectUri("qq"))
                         .build());
                 break;
             case "github":
                 authRequest = new AuthGithubRequest(AuthConfig.builder()
-                        .clientId("Iv23liDc1CF8A4QE4Q0y")
-                        .clientSecret("d3223ab226d9edb0fcd9ca12ef96373da1aea837")
-                        .redirectUri("http://localhost:8443/oauth/callback/github")
+                        .clientId(authConfig.getClientId("github"))
+                        .clientSecret(authConfig.getClientSecret("github"))
+                        .redirectUri(authConfig.getRedirectUri("github"))
                         .scopes(AuthScopeUtils.getScopes(AuthGithubScope.values()))
                         // 针对国外平台配置代理
                         .httpConfig(HttpConfig.builder()
@@ -99,9 +103,9 @@ public class RestAuthController {
                 break;
             case "google":
                 authRequest = new AuthGoogleRequest(AuthConfig.builder()
-                        .clientId("868027239116-neei8f6t31or27aveamv3luc619v0hrd.apps.googleusercontent.com")
-                        .clientSecret("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")
-                        .redirectUri("http://localhost:8443/oauth/callback/google")
+                        .clientId(authConfig.getClientId("google"))
+                        .clientSecret(authConfig.getClientSecret("google"))
+                        .redirectUri(authConfig.getRedirectUri("google"))
                         .scopes(AuthScopeUtils.getScopes(AuthGoogleScope.USER_EMAIL, AuthGoogleScope.USER_PROFILE, AuthGoogleScope.USER_OPENID))
                         // 针对国外平台配置代理
                         .httpConfig(HttpConfig.builder()
