@@ -1,4 +1,4 @@
-import { Button, Form, Modal, Select, message } from "antd";
+import { App, Button, Form, Modal, Select } from "antd";
 import React, { useEffect, useState } from "react";
 import { listQuestionBankVoByPageUsingPost } from "@/api/questionBankController";
 import { batchAddQuestionsToBankUsingPost } from "@/api/questionBankQuestionController";
@@ -18,8 +18,8 @@ interface Props {
 const BatchAddQuestionsToBankModal: React.FC<Props> = (props) => {
     const { questionIdList = [], visible, onSubmit, onCancel } = props;
     const [form] = Form.useForm();
-    const [messageApi, contextHolder] = message.useMessage();
     const [questionBankList, setQuestionBankList] = useState<API.QuestionBankVO[]>([]);
+    const { message } = App.useApp();
 
     // 获取题库列表
     const getQuestionBankList = async () => {
@@ -34,7 +34,7 @@ const BatchAddQuestionsToBankModal: React.FC<Props> = (props) => {
             });
             setQuestionBankList(res.data?.records ?? []);
         } catch (e: any) {
-            messageApi.error("获取题库列表失败，" + e.message);
+            message.error("获取题库列表失败，" + e.message);
         }
     };
 
@@ -47,7 +47,7 @@ const BatchAddQuestionsToBankModal: React.FC<Props> = (props) => {
      * @param fields
      */
     const doSubmit = async (fields: API.QuestionBankQuestionBatchAddRequest) => {
-        const hide = messageApi.loading("正在操作");
+        const hide = message.loading("正在操作");
         const questionBankId = fields.questionBankId;
         try {
             await batchAddQuestionsToBankUsingPost({
@@ -55,11 +55,11 @@ const BatchAddQuestionsToBankModal: React.FC<Props> = (props) => {
                 questionBankId,
             });
             hide();
-            messageApi.success("操作成功");
+            message.success("操作成功");
             onSubmit?.();
-        } catch (error: any) {
+        } catch (e: any) {
             hide();
-            messageApi.error("操作失败，" + error.message);
+            message.error("操作失败，" + e.message);
         }
     };
 
@@ -73,7 +73,6 @@ const BatchAddQuestionsToBankModal: React.FC<Props> = (props) => {
                 onCancel?.();
             }}
         >
-            {contextHolder}
             <Form
                 form={form}
                 style={{ marginTop: 24 }}
@@ -100,4 +99,10 @@ const BatchAddQuestionsToBankModal: React.FC<Props> = (props) => {
     );
 };
 
-export default BatchAddQuestionsToBankModal;
+const AppBatchAddQuestionsToBankModal: React.FC<Props> = (props) => (
+    <App>
+        <BatchAddQuestionsToBankModal {...props} />
+    </App>
+);
+
+export default AppBatchAddQuestionsToBankModal;

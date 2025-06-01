@@ -3,7 +3,7 @@ import {
   listQuestionBankQuestionVoByPageUsingPost,
   removeQuestionBankQuestionUsingPost
 } from "@/api/questionBankQuestionController";
-import { Form, message, Modal, Select } from 'antd';
+import { App, Form, Modal, Select } from 'antd';
 import React, { useCallback, useEffect, useState } from 'react';
 import { listQuestionBankVoByPageUsingPost } from "@/api/questionBankController";
 
@@ -21,8 +21,8 @@ interface Props {
 const UpdateBankModal: React.FC<Props> = (props) => {
   const { questionId, visible, onCancel } = props;
   const [form] = Form.useForm();
-  const [messageApi, contextHolder] = message.useMessage();
   const [questionBankList, setQuestionBankList] = useState<API.QuestionBankVO[]>([]);
+  const { message } = App.useApp();
 
   // 获取所属题库列表
   const getCurrentQuestionBankIdList = useCallback(async () => {
@@ -34,9 +34,9 @@ const UpdateBankModal: React.FC<Props> = (props) => {
       const list = (res.data?.records ?? []).map(item => item.questionBankId);
       form.setFieldValue("questionBankIdList", list);
     } catch (e: any) {
-      messageApi.error("获取题目所属题库列表失败：" + e.message);
+      message.error("获取题目所属题库列表失败：" + e.message);
     }
-  }, [questionId, form, messageApi]);
+  }, [questionId, form, message]);
 
   useEffect(() => {
     if (questionId) {
@@ -57,7 +57,7 @@ const UpdateBankModal: React.FC<Props> = (props) => {
       })
       setQuestionBankList(res.data?.records ?? []);
     } catch (e: any) {
-      messageApi.error("获取题库列表失败：" + e.message);
+      message.error("获取题库列表失败：" + e.message);
     }
   }
 
@@ -74,12 +74,11 @@ const UpdateBankModal: React.FC<Props> = (props) => {
         onCancel?.();
       }}
     >
-      {contextHolder}
-      <Form form={form} style={{marginTop: 24}}>
+      <Form form={form} style={{ marginTop: 24 }}>
         <Form.Item label="所属题库" name="questionBankIdList">
           <Select
             mode="multiple"
-            style={{width: "100%"}}
+            style={{ width: "100%" }}
             options={
               questionBankList.map(questionBank => {
                 return {
@@ -89,31 +88,31 @@ const UpdateBankModal: React.FC<Props> = (props) => {
               })
             }
             onSelect={async (value) => {
-              const hide = messageApi.loading("正在更新");
+              const hide = message.loading("正在更新");
               try {
                 await addQuestionBankQuestionUsingPost({
                   questionId,
                   questionBankId: value,
                 });
                 hide();
-                messageApi.success("绑定题库成功");
+                message.success("绑定题库成功");
               } catch (e: any) {
                 hide();
-                messageApi.error("绑定题库失败，" + e.message);
+                message.error("绑定题库失败，" + e.message);
               }
             }}
             onDeselect={async (value) => {
-              const hide = messageApi.loading("正在更新");
+              const hide = message.loading("正在更新");
               try {
                 await removeQuestionBankQuestionUsingPost({
                   questionId,
                   questionBankId: value,
                 });
                 hide();
-                messageApi.success("取消绑定题库成功");
+                message.success("取消绑定题库成功");
               } catch (e: any) {
                 hide();
-                messageApi.error("取消绑定题库失败，" + e.message);
+                message.error("取消绑定题库失败，" + e.message);
               }
             }}
           />
@@ -123,4 +122,10 @@ const UpdateBankModal: React.FC<Props> = (props) => {
   )
 };
 
-export default UpdateBankModal;
+const AppUpdateBankModal: React.FC<Props> = (props) => (
+  <App>
+    <UpdateBankModal {...props} />
+  </App>
+);
+
+export default AppUpdateBankModal;

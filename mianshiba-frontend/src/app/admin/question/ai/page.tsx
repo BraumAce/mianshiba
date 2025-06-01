@@ -1,5 +1,6 @@
 "use client";
-import { Button, Form, Input, InputNumber, message, Select, Input as AntdInput } from "antd";
+
+import { App, Button, Form, Input, InputNumber, Select, Input as AntdInput } from "antd";
 import React, { useState } from "react";
 import { aiGenerateQuestionsUsingPost } from "@/api/questionController";
 import "./index.css";
@@ -15,6 +16,7 @@ const AiGenerateQuestionPage: React.FC<Props> = (props) => {
     const [form] = Form.useForm();
     const [loading, setLoading] = useState(false);
     const [generatedContent, setGeneratedContent] = useState<string>("");
+    const { message } = App.useApp();
 
     /**
      * 提交
@@ -29,9 +31,9 @@ const AiGenerateQuestionPage: React.FC<Props> = (props) => {
             setGeneratedContent(JSON.stringify(result, null, 2));
             hide();
             message.success("操作成功");
-        } catch (error: any) {
+        } catch (e: any) {
             hide();
-            message.error("操作失败，" + error.message);
+            message.error("操作失败，" + e.message);
         }
         setLoading(false);
     };
@@ -79,4 +81,10 @@ const AiGenerateQuestionPage: React.FC<Props> = (props) => {
     );
 };
 
-export default AiGenerateQuestionPage;
+const AppAiGenerateQuestionPage: React.FC<Props> = (props) => (
+  <App>
+      <AiGenerateQuestionPage {...props} />
+  </App>
+);
+
+export default AppAiGenerateQuestionPage;

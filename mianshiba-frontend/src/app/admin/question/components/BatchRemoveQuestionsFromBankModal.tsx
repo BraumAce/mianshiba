@@ -1,4 +1,4 @@
-import { Button, Form, message, Modal, Select } from "antd";
+import { App, Button, Form, Modal, Select } from "antd";
 import React, { useEffect, useState } from "react";
 import { listQuestionBankVoByPageUsingPost } from "@/api/questionBankController";
 import { batchRemoveQuestionsFromBankUsingPost } from "@/api/questionBankQuestionController";
@@ -18,8 +18,8 @@ interface Props {
 const BatchRemoveQuestionsToBankModal: React.FC<Props> = (props) => {
     const { questionIdList = [], visible, onCancel, onSubmit } = props;
     const [form] = Form.useForm();
-    const [messageApi, contextHolder] = message.useMessage();
     const [questionBankList, setQuestionBankList] = useState<API.QuestionBankVO[]>([]);
+    const { message } = App.useApp();
 
     // 获取题库列表
     const getQuestionBankList = async () => {
@@ -34,7 +34,7 @@ const BatchRemoveQuestionsToBankModal: React.FC<Props> = (props) => {
             });
             setQuestionBankList(res.data?.records ?? []);
         } catch (e: any) {
-            messageApi.error("获取题库列表失败，" + e.message);
+            message.error("获取题库列表失败，" + e.message);
         }
     };
 
@@ -50,7 +50,7 @@ const BatchRemoveQuestionsToBankModal: React.FC<Props> = (props) => {
     const doSubmit = async (
         values: API.QuestionBankQuestionBatchRemoveRequest,
     ) => {
-        const hide = messageApi.loading("正在操作");
+        const hide = message.loading("正在操作");
         const questionBankId = values.questionBankId;
         if (!questionBankId) {
             return;
@@ -61,11 +61,11 @@ const BatchRemoveQuestionsToBankModal: React.FC<Props> = (props) => {
                 questionIdList,
             });
             hide();
-            messageApi.success("操作成功");
+            message.success("操作成功");
             onSubmit?.();
         } catch (error: any) {
             hide();
-            messageApi.error("操作失败，" + error.message);
+            message.error("操作失败，" + error.message);
         }
     };
 
@@ -79,7 +79,6 @@ const BatchRemoveQuestionsToBankModal: React.FC<Props> = (props) => {
                 onCancel?.();
             }}
         >
-            {contextHolder}
             <Form
                 form={form}
                 style={{ marginTop: 24 }}
@@ -105,4 +104,11 @@ const BatchRemoveQuestionsToBankModal: React.FC<Props> = (props) => {
         </Modal>
     );
 };
-export default BatchRemoveQuestionsToBankModal;
+
+const AppBatchRemoveQuestionsToBankModal: React.FC<Props> = (props) => (
+    <App>
+        <BatchRemoveQuestionsToBankModal {...props} />
+    </App>
+);
+
+export default AppBatchRemoveQuestionsToBankModal;

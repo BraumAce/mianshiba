@@ -1,18 +1,18 @@
 "use client";
 
-import CreateModal from './components/CreateModal';
-import UpdateModal from './components/UpdateModal';
+import AppCreateModal from './components/CreateModal';
+import AppUpdateModal from './components/UpdateModal';
+import AppUpdateBankModal from "./components/UpdateBankModal";
+import AppBatchAddQuestionsToBankModal from './components/BatchAddQuestionsToBankModal';
+import AppBatchRemoveQuestionsToBankModal from './components/BatchRemoveQuestionsFromBankModal';
 import { batchDeleteQuestionsUsingPost, deleteQuestionUsingPost, listQuestionByPageUsingPost } from '@/api/questionController';
 import { PlusOutlined } from '@ant-design/icons';
 import type { ActionType, ProColumns } from '@ant-design/pro-components';
 import { PageContainer, ProTable } from '@ant-design/pro-components';
-import { Button, message, Popconfirm, Space, Table, Typography } from 'antd';
+import { App, Button, Popconfirm, Space, Table, Typography } from 'antd';
 import React, { useRef, useState } from 'react';
 import TagList from "@/components/TagList";
 import MdEditor from "@/components/MdEditor";
-import UpdateBankModal from "@/app/admin/question/components/UpdateBankModal";
-import BatchAddQuestionsToBankModal from './components/BatchAddQuestionsToBankModal';
-import BatchRemoveQuestionsToBankModal from './components/BatchRemoveQuestionsFromBankModal';
 
 /**
  * 题目管理页面
@@ -44,6 +44,7 @@ const QuestionAdminPage: React.FC = () => {
   const actionRef = useRef<ActionType>();
   // 当前题目点击的数据
   const [currentRow, setCurrentRow] = useState<API.Question>();
+  const { message } = App.useApp();
 
   /**
    * 删除节点
@@ -62,9 +63,9 @@ const QuestionAdminPage: React.FC = () => {
       // 删除成功后刷新表格
       actionRef?.current?.reload();
       return true;
-    } catch (error: any) {
+    } catch (e: any) {
       hide();
-      message.error('删除失败，' + error.message);
+      message.error('删除失败，' + e.message);
       return false;
     }
   };
@@ -82,9 +83,9 @@ const QuestionAdminPage: React.FC = () => {
       hide();
       message.success("操作成功");
       actionRef?.current?.reload();
-    } catch (error: any) {
+    } catch (e: any) {
       hide();
-      message.error("操作失败，" + error.message);
+      message.error("操作失败，" + e.message);
     }
   };
 
@@ -296,11 +297,11 @@ const QuestionAdminPage: React.FC = () => {
         }}
         toolBarRender={() => [
           <Button
-             type="primary"
-             ghost
-             key="primary"
-             href="/admin/question/ai"
-             target="_blank"
+            type="primary"
+            ghost
+            key="primary"
+            href="/admin/question/ai"
+            target="_blank"
           >
             <PlusOutlined /> AI 生成题目
           </Button>,
@@ -333,7 +334,7 @@ const QuestionAdminPage: React.FC = () => {
         }}
         columns={columns}
       />
-      <CreateModal
+      <AppCreateModal
         visible={createModalVisible}
         columns={columns}
         onSubmit={() => {
@@ -344,7 +345,7 @@ const QuestionAdminPage: React.FC = () => {
           setCreateModalVisible(false);
         }}
       />
-      <UpdateModal
+      <AppUpdateModal
         visible={updateModalVisible}
         columns={columns}
         oldData={currentRow}
@@ -357,7 +358,7 @@ const QuestionAdminPage: React.FC = () => {
           setUpdateModalVisible(false);
         }}
       />
-      <UpdateBankModal
+      <AppUpdateBankModal
         questionId={currentRow?.id}
         visible={updateBankModalVisible}
         onCancel={() => {
@@ -365,7 +366,7 @@ const QuestionAdminPage: React.FC = () => {
           actionRef?.current?.reload();
         }}
       />
-      <BatchAddQuestionsToBankModal
+      <AppBatchAddQuestionsToBankModal
         visible={batchAddQuestionsToBankModalVisible}
         questionIdList={selectedQuestionIdList}
         onSubmit={() => {
@@ -376,7 +377,7 @@ const QuestionAdminPage: React.FC = () => {
           setBatchAddQuestionsToBankModalVisible(false);
         }}
       />
-      <BatchRemoveQuestionsToBankModal
+      <AppBatchRemoveQuestionsToBankModal
         visible={batchRemoveQuestionsFromBankModalVisible}
         questionIdList={selectedQuestionIdList}
         onSubmit={() => {
@@ -391,4 +392,12 @@ const QuestionAdminPage: React.FC = () => {
   );
 };
 
-export default QuestionAdminPage;
+const AppQuestionAdminPage: React.FC = () => {
+  return (
+    <App>
+      <QuestionAdminPage />
+    </App>
+  );
+};
+
+export default AppQuestionAdminPage;

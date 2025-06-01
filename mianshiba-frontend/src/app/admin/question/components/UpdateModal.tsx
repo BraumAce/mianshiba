@@ -1,6 +1,6 @@
 import { updateQuestionUsingPost } from '@/api/questionController';
 import { ProColumns, ProTable } from '@ant-design/pro-components';
-import { message, Modal } from 'antd';
+import { App, Modal } from 'antd';
 import React from 'react';
 
 interface Props {
@@ -12,31 +12,32 @@ interface Props {
 }
 
 /**
- * 更新节点
- *
- * @param fields
- */
-const handleUpdate = async (fields: API.QuestionUpdateRequest) => {
-  const hide = message.loading('正在更新');
-  try {
-    await updateQuestionUsingPost(fields);
-    hide();
-    message.success('更新成功');
-    return true;
-  } catch (error: any) {
-    hide();
-    message.error('更新失败，' + error.message);
-    return false;
-  }
-};
-
-/**
  * 更新弹窗
  * @param props
  * @constructor
  */
 const UpdateModal: React.FC<Props> = (props) => {
   const { oldData, visible, columns, onSubmit, onCancel } = props;
+  const { message } = App.useApp();
+
+  /**
+   * 更新节点
+   *
+   * @param fields
+   */
+  const handleUpdate = async (fields: API.QuestionUpdateRequest) => {
+    const hide = message.loading('正在更新');
+    try {
+      await updateQuestionUsingPost(fields);
+      hide();
+      message.success('更新成功');
+      return true;
+    } catch (error: any) {
+      hide();
+      message.error('更新失败，' + error.message);
+      return false;
+    }
+  };
 
   if (!oldData) {
     return <></>;
@@ -78,4 +79,10 @@ const UpdateModal: React.FC<Props> = (props) => {
   );
 };
 
-export default UpdateModal;
+const AppUpdateModal: React.FC<Props> = (props) => (
+  <App>
+    <UpdateModal {...props} />
+  </App>
+);
+
+export default AppUpdateModal;
